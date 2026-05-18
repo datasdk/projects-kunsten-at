@@ -1,0 +1,7 @@
+:root {
+  --app-content-bg: #f6f8fb;
+}
+
+ion-content {
+  --background: var(--app-content-bg);
+}

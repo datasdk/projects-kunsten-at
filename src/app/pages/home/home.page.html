@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <div class="flex flex-col items-center justify-center h-full text-center space-y-4">
+
+    <h1 class="text-3xl font-bold">
+      Velkommen 👋
+    </h1>
+
+    <p class="text-gray-500 max-w-sm">
+      Velkommen til min app. Her kan du logge ind og komme i gang med at bruge systemet.
+    </p>
+
+    <ion-button
+      [routerLink]="['/auth/login']"
+      expand="block"
+      class="mt-6 w-full max-w-xs"
+    >
+      Gå til login
+    </ion-button>
+
+  </div>
+
+</ion-content>

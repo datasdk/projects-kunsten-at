@@ -1,0 +1,16 @@
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+ion-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+}
+
+.error-text {
+  margin: 10px 0;
+}

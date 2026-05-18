@@ -53,3 +53,17 @@ import 'zone.js';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+
+import { Orion } from '@tailflow/laravel-orion/lib/orion';
+
+import { environment } from '@environments/environment';
+
+
+Orion.init(environment.domain);
+
+Orion.setPrefix('api');
+
+Orion.setToken('datas-access-token');
+
+
