@@ -1,0 +1,17 @@
+<ion-content fullscreen class="videos-content">
+  <app-video-playlist
+    [videos]="videos"
+    [current]="current"
+    [loading]="loading"
+    [error]="error"
+    [showAccessNotice]="showAccessNotice"
+    [accessNoticeText]="accessNoticeText"
+    [showLoginLink]="showLoginLink"
+    [canStartCourse]="canStartCourse"
+    [canFinishTask]="canFinishTask"
+    (currentChange)="setCurrent($event)"
+    (closeAccessNotice)="showAccessNotice = false"
+    (startCourseRequested)="startCourse()"
+    (finishTaskRequested)="finishTask()"
+  ></app-video-playlist>
+</ion-content>

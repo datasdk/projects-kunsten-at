@@ -11,9 +11,7 @@
       "@services/*": ["services/*"],
       "@environments/*": ["environments/*"],
       "@assets/*": ["assets/*"],
-      "@theme/*": ["theme/*"],
-      "@modules/*": ["modules/*"],
-      "@components/*": ["components/*"]      
+      "@theme/*": ["theme/*"]
     },
 
     "types": ["@angular/localize"],

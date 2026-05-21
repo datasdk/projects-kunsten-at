@@ -41,6 +41,11 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/.well-known",
+                "output": ".well-known"
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss", "src/theme/app.scss"],
@@ -49,6 +54,9 @@
           },
           "configurations": {
             "production": {
+              "optimization": {
+                "fonts": false
+              },
               "budgets": [
                 {
                   "type": "initial",
