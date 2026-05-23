@@ -1,9 +1,0 @@
-# Real Firebase credentials should be supplied locally or by CI.
-*.json
-*.plist
-*.p8
-
-# Keep sanitized examples in the repository.
-!*.test.json
-!*.test.plist
-!README.md
