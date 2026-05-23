@@ -81,7 +81,11 @@ export class VideosPage implements OnInit, OnDestroy {
 
     try {
       this.loggedIn = await this.auth.isLoggedin();
-      await this.auth.getUser();
+      if (this.loggedIn) {
+        await this.auth.refreshUser();
+      } else {
+        await this.auth.getUser();
+      }
       this.hasFullAccess = this.auth.hasPlan(1);
       this.showAccessNotice = !this.hasFullAccess;
       this.videos = await this.videoService.getVideos(this.categoryId, this.hasFullAccess);
@@ -124,7 +128,6 @@ export class VideosPage implements OnInit, OnDestroy {
 
   private async showFinishedAlert(task: ActiveTask): Promise<void> {
     const subscribed = await this.push.isSubscribed();
-    const day = this.taskDay(task);
     const buttons: AlertButton[] = subscribed
       ? [{ text: 'OK', role: 'confirm' }]
       : [
@@ -140,8 +143,16 @@ export class VideosPage implements OnInit, OnDestroy {
 
     const alert = await this.alertController.create({
       header: 'Tillykke!',
-      message: `Du har nu gennemført dag ${day} af ${task.days}. Vi hjælper dig videre i morgen, så du kan holde rytmen i dit forløb.`,
-      buttons
+      message: `Tillykke, du har fuldført øvelsen i ${task.days} dage.<br><a href="/results">Se dine resultater her</a>`,
+      buttons: [
+        ...buttons,
+        {
+          text: 'Se dine resultater her',
+          handler: () => {
+            void this.router.navigateByUrl('/results');
+          }
+        }
+      ]
     });
 
     await alert.present();
@@ -151,13 +162,6 @@ export class VideosPage implements OnInit, OnDestroy {
     this.activeTask = await this.progress.getActiveTask(this.categoryId, this.current);
     this.hasActiveTask = await this.progress.hasAnyActiveTask();
     this.checked = await this.progress.isTaskDoneToday(this.categoryId, this.current);
-  }
-
-  private taskDay(task: ActiveTask): number {
-    const start = new Date(task.startdate.replace(' ', 'T'));
-    const diff = Date.now() - start.getTime();
-    const day = Math.floor(diff / (24 * 60 * 60 * 1000)) + 1;
-    return Math.max(1, Math.min(task.days, day));
   }
 
   private isIntro(video: VideoItem): boolean {

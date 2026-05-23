@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { AlertService } from '@/core/services/alert.service';
+import { AlertService } from '@services/alert.service';
 import { CourseProgressService } from '@/course/services/course-progress.service';
 import { VideoItem } from '../../services/video.service';
 

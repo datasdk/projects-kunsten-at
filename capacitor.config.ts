@@ -1,9 +1,11 @@
+/// <reference types="@capacitor/push-notifications" />
+
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'dk.kunstenat.app',
   appName: 'Kunsten At',
-  webDir: 'www',
+  webDir: 'www/da',
   server: {
     androidScheme: 'https'
   },
@@ -19,6 +21,9 @@ const config: CapacitorConfig = {
     },
     Keyboard: {
       resize: 'ionic'
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert', 'banner', 'list']
     }
   }
 };

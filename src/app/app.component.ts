@@ -25,13 +25,15 @@ import {
   star,
   starOutline,
   statsChartOutline,
+  stop,
   timeOutline,
   trendingUpOutline,
   videocamOutline
 } from 'ionicons/icons';
 import { filter } from 'rxjs';
 import { AuthService } from '@/auth/services/auth.service';
-import { DeepLinkService } from './core/services/deep-link.service';
+import { FirebasePushService } from '@/notifications/services/firebase-push.service';
+import { DeepLinkService } from '@services/deep-link.service';
 
 @Component({
   selector: 'app-root',
@@ -52,6 +54,7 @@ export class AppComponent implements OnInit {
     public auth: AuthService,
     private router: Router,
     private deepLinks: DeepLinkService,
+    private push: FirebasePushService,
     private menu: MenuController
   ) {
     addIcons({
@@ -76,6 +79,7 @@ export class AppComponent implements OnInit {
       star,
       starOutline,
       statsChartOutline,
+      stop,
       timeOutline,
       trendingUpOutline,
       videocamOutline
@@ -91,6 +95,7 @@ export class AppComponent implements OnInit {
       });
 
     this.deepLinks.initialize();
+    void this.push.initialize();
   }
 
   async logout(): Promise<void> {

@@ -1,15 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
 import { Capacitor } from '@capacitor/core';
 import { Device } from '@capacitor/device';
-import { LocalNotifications } from '@capacitor/local-notifications';
 import {
   ActionPerformed,
+  PermissionStatus,
   PushNotificationSchema,
   PushNotifications,
+  RegistrationError,
   Token
 } from '@capacitor/push-notifications';
-import { ApiService } from '@/core/services/api.service';
-import { NativeStorageService } from '@/core/services/native-storage.service';
+import { ApiService } from '@services/api.service';
+import { NativeStorageService } from '@services/native-storage.service';
+import { notificationEnv } from '../notification-env';
 
 interface DeviceRegistrationPayload {
   token: string;
@@ -25,69 +28,157 @@ export class FirebasePushService {
 
   constructor(
     private api: ApiService,
-    private storage: NativeStorageService
+    private storage: NativeStorageService,
+    private router: Router,
+    private zone: NgZone
   ) {}
 
   async initialize(): Promise<void> {
-    if (this.listenersReady) {
+    if (this.listenersReady || !Capacitor.isNativePlatform()) {
       return;
     }
 
     this.listenersReady = true;
 
-    PushNotifications.addListener('registration', async (token: Token) => {
-      await this.registerDevice(token.value);
-      await this.storage.setString('subscribedToNotifications', 'true');
-    });
+    await Promise.all([
+      PushNotifications.addListener('registration', (token: Token) => {
+        void this.handleRegistration(token);
+      }),
+      PushNotifications.addListener('registrationError', (error: RegistrationError) => {
+        this.logRegistrationError(error);
+      }),
+      PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
+        void this.handleForegroundNotification(notification);
+      }),
+      PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
+        this.handleNotificationAction(notification);
+      })
+    ]);
+  }
 
-    PushNotifications.addListener('registrationError', (error: unknown) => {
-      console.error('Push registration error', error);
-    });
+  async checkPermissions(): Promise<PermissionStatus> {
+    if (!Capacitor.isNativePlatform()) {
+      return { receive: 'denied' };
+    }
 
-    PushNotifications.addListener('pushNotificationReceived', async (notification: PushNotificationSchema) => {
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            id: Date.now(),
-            title: notification.title ?? 'Kunsten At',
-            body: notification.body ?? '',
-            schedule: { at: new Date(Date.now() + 100) }
-          }
-        ]
-      });
-    });
+    return PushNotifications.checkPermissions();
+  }
 
-    PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
-      console.info('Push action performed', notification);
-    });
+  async requestPermissions(): Promise<PermissionStatus> {
+    if (!Capacitor.isNativePlatform()) {
+      return { receive: 'denied' };
+    }
+
+    return PushNotifications.requestPermissions();
+  }
+
+  async register(): Promise<void> {
+    await this.initialize();
+
+    let permission = await this.checkPermissions();
+
+    if (permission.receive === 'prompt') {
+      permission = await this.requestPermissions();
+    }
+
+    if (permission.receive !== 'granted') {
+      throw new Error(`Push notification permission is ${permission.receive}.`);
+    }
+
+    await this.createDefaultChannel();
+    await PushNotifications.register();
   }
 
   async registerForPush(): Promise<{ success: boolean; msg: string }> {
-    await this.initialize();
-
     if (!Capacitor.isNativePlatform()) {
       return { success: false, msg: 'Push-notifikationer kræver en native app-build.' };
     }
 
-    const permission = await PushNotifications.requestPermissions();
-
-    if (permission.receive !== 'granted') {
+    try {
+      await this.register();
+      return { success: true, msg: 'Registrering startet.' };
+    } catch (error) {
+      console.error('Push registration failed', error);
       return { success: false, msg: 'Tilladelse til push-notifikationer blev ikke givet.' };
     }
-
-    await LocalNotifications.requestPermissions();
-    await PushNotifications.register();
-
-    return { success: true, msg: 'Registrering startet.' };
   }
 
   async isSubscribed(): Promise<boolean> {
-    return (await this.storage.getString('subscribedToNotifications')) === 'true';
+    return (await this.storage.getString(notificationEnv.push.subscribedStorageKey)) === 'true';
+  }
+
+  async getStoredToken(): Promise<string | null> {
+    return this.storage.getString(notificationEnv.push.tokenStorageKey);
+  }
+
+  private async handleRegistration(token: Token): Promise<void> {
+    await this.storage.setString(notificationEnv.push.tokenStorageKey, token.value);
+
+    if (notificationEnv.push.logTokenInDevelopment) {
+      console.info('Push registration token', token.value);
+    }
+
+    try {
+      await this.registerDevice(token.value);
+      await this.storage.setString(notificationEnv.push.subscribedStorageKey, 'true');
+    } catch (error) {
+      await this.storage.setString(notificationEnv.push.subscribedStorageKey, 'false');
+      console.error('Push token received, but backend registration failed', error);
+    }
+  }
+
+  private logRegistrationError(error: RegistrationError): void {
+    console.error('Push registration error', error.error);
+  }
+
+  private async handleForegroundNotification(notification: PushNotificationSchema): Promise<void> {
+    await this.storage.setObject('last_push_foreground', {
+      notification,
+      receivedAt: new Date().toISOString()
+    });
+    console.info('Push notification received in foreground', notification);
+  }
+
+  private handleNotificationAction(action: ActionPerformed): void {
+    console.info('Push notification action performed', action);
+
+    const route = this.routeFromNotification(action.notification);
+
+    if (!route) {
+      return;
+    }
+
+    this.zone.run(() => {
+      this.router.navigateByUrl(route).catch((error) => {
+        console.error('Push notification route navigation failed', error);
+      });
+    });
+  }
+
+  private async createDefaultChannel(): Promise<void> {
+    if (Capacitor.getPlatform() !== 'android') {
+      return;
+    }
+
+    try {
+      await PushNotifications.createChannel({
+        id: notificationEnv.push.defaultChannelId,
+        name: notificationEnv.push.defaultChannelName,
+        description: notificationEnv.push.defaultChannelDescription,
+        importance: 4,
+        visibility: 1,
+        lights: true,
+        lightColor: '#4f73b8',
+        vibration: true
+      });
+    } catch (error) {
+      console.warn('Could not create default push notification channel', error);
+    }
   }
 
   private async registerDevice(token: string): Promise<void> {
     const payload = await this.devicePayload(token);
-    await this.api.post('firebase/devices', payload);
+    await this.api.post(notificationEnv.push.tokenRegistrationEndpoint, payload);
   }
 
   private async devicePayload(token: string): Promise<DeviceRegistrationPayload> {
@@ -109,5 +200,41 @@ export class FirebasePushService {
       device_id: id.identifier,
       device_type: info.platform
     };
+  }
+
+  private routeFromNotification(notification: PushNotificationSchema): string | null {
+    const data = notification.data as Record<string, unknown> | undefined;
+    const rawRoute = notification.link
+      ?? this.asString(data?.['url'])
+      ?? this.asString(data?.['deep_link'])
+      ?? this.asString(data?.['route']);
+
+    if (!rawRoute) {
+      return null;
+    }
+
+    if (rawRoute.startsWith('/')) {
+      return rawRoute;
+    }
+
+    try {
+      const url = new URL(rawRoute);
+
+      if (url.protocol === 'kunstenat:') {
+        return `/${url.host}${url.pathname}${url.search}`;
+      }
+
+      if (url.host === 'app.kunsten-at.dk') {
+        return `${url.pathname}${url.search}`;
+      }
+    } catch {
+      return null;
+    }
+
+    return null;
+  }
+
+  private asString(value: unknown): string | null {
+    return typeof value === 'string' && value.trim() ? value : null;
   }
 }

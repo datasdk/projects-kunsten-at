@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kunsten At</string>
+    <string name="title_activity_main">Kunsten At</string>
+    <string name="package_name">dk.kunstenat.app</string>
+    <string name="custom_url_scheme">dk.kunstenat.app</string>
+    <string name="default_notification_channel_id">kunsten_at_default</string>
+</resources>

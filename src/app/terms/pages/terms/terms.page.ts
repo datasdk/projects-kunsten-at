@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { ApiService } from '@/core/services/api.service';
-import { LoadingComponent } from '@/core/loading/loading.component';
+import { ApiService } from '@services/api.service';
+import { LoadingComponent } from '@/ui/loading/loading.component';
 
 interface TermsResponse {
   data?: {

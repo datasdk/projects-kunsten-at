@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 import { FirebasePushService } from '@/notifications/services/firebase-push.service';
-import { AlertService } from '@/core/services/alert.service';
+import { AlertService } from '@services/alert.service';
 
 @Component({
   selector: 'app-notification-register',

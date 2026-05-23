@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { LoadingComponent } from '@/core/loading/loading.component';
+import { LoadingComponent } from '@/ui/loading/loading.component';
 import { VideoItem } from '../../services/video.service';
 import { VideoPlayerComponent } from '../player/video-player.component';
 

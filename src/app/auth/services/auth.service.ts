@@ -21,7 +21,8 @@ export interface AuthUser {
   first_name?: string;
   last_name?: string;
   email?: string;
-  memberships?: Array<{ plan_id?: number | string }>;
+  plan_id?: number | string | null;
+  memberships?: Array<{ plan_id?: number | string | null }>;
 }
 
 
@@ -31,6 +32,7 @@ export interface AuthUser {
 
 
 export class AuthService {
+  private readonly planIdKey = 'plan_id';
 
 
   token = signal<string | null>(null);
@@ -87,12 +89,18 @@ export class AuthService {
     try {
 
 
-      const response = await firstValueFrom(this.http.post<{ token?: string; user?: AuthUser }>(url, { email, password, rememberMe }));
+      const response = await firstValueFrom(this.http.post<{ token?: string; user?: AuthUser }>(url, {
+        email,
+        password,
+        rememberMe,
+        include: 'memberships'
+      }));
+      const user = this.withPlanId(response.user ?? null);
 
 
       if (response.token) {
 
-        await Preferences.set({ key: 'auth_user', value: JSON.stringify(response.user ?? null) });
+        await this.persistUser(user);
 
         await Preferences.set({ key: 'auth_token', value: response.token });
         localStorage.removeItem('guest_mode');
@@ -101,13 +109,13 @@ export class AuthService {
         this.token.set(response.token);
         this.setAuthToken(response.token);
           
-        this.user.set(response.user ?? null);
+        this.user.set(user);
         this.guestMode.set(false);
 
       }
 
 
-      return response;
+      return { ...response, user: user ?? response.user };
 
 
     } catch (err) {
@@ -179,6 +187,8 @@ export class AuthService {
       await Preferences.remove({ key: 'auth_user' });
 
       await Preferences.remove({ key: 'auth_token'});
+      await Preferences.remove({ key: this.planIdKey });
+      this.clearCookie(this.planIdKey);
       localStorage.removeItem('guest_mode');
 
       this.token.set(null);
@@ -217,9 +227,10 @@ export class AuthService {
 
     if (!value) return null;
 
-    const parsed = JSON.parse(value);
+    const parsed = this.withPlanId(JSON.parse(value));
 
     this.user.set(parsed)
+    await this.persistPlanId(parsed?.plan_id ?? null);
 
     return parsed;
 
@@ -238,15 +249,20 @@ export class AuthService {
       const response = await firstValueFrom(this.http.get<{ data?: AuthUser; user?: AuthUser }>(url, {
         headers: {
           Authorization: `Bearer ${token}`
+        },
+        params: {
+          include: 'memberships'
         }
       }));
 
-      const user = response.data ?? response.user ?? null;
+      const user = this.withPlanId(response.data ?? response.user ?? null);
 
       this.user.set(user);
 
       if (user) {
-        await Preferences.set({ key: 'auth_user', value: JSON.stringify(user) });
+        await this.persistUser(user);
+      } else {
+        await this.persistPlanId(null);
       }
 
       return user;
@@ -295,8 +311,50 @@ export class AuthService {
   }
 
   hasPlan(planId: number): boolean {
-    return !!this.user()?.memberships?.some((membership) => Number(membership.plan_id) === planId);
+    const user = this.user();
+    return Number(user?.plan_id) === planId
+      || !!user?.memberships?.some((membership) => Number(membership.plan_id) === planId);
 
+  }
+
+  private withPlanId(user: AuthUser | null): AuthUser | null {
+    if (!user) {
+      return null;
+    }
+
+    const membershipPlanId = user.memberships
+      ?.map((membership) => membership.plan_id)
+      .find((planId) => planId !== null && planId !== undefined);
+
+    return {
+      ...user,
+      plan_id: user.plan_id ?? membershipPlanId ?? null
+    };
+  }
+
+  private async persistUser(user: AuthUser | null): Promise<void> {
+    await Preferences.set({ key: 'auth_user', value: JSON.stringify(user) });
+    await this.persistPlanId(user?.plan_id ?? null);
+  }
+
+  private async persistPlanId(planId: number | string | null | undefined): Promise<void> {
+    if (planId === null || planId === undefined || planId === '') {
+      await Preferences.remove({ key: this.planIdKey });
+      this.clearCookie(this.planIdKey);
+      return;
+    }
+
+    const value = String(planId);
+    await Preferences.set({ key: this.planIdKey, value });
+    this.setCookie(this.planIdKey, value);
+  }
+
+  private setCookie(key: string, value: string): void {
+    document.cookie = `${key}=${encodeURIComponent(value)}; Max-Age=31536000; Path=/; SameSite=Lax`;
+  }
+
+  private clearCookie(key: string): void {
+    document.cookie = `${key}=; Max-Age=0; Path=/; SameSite=Lax`;
   }
 
 
