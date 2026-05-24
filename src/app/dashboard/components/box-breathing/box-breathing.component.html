@@ -1,0 +1,30 @@
+<ion-card class="breathing-card">
+  <div class="progress-wrap">
+    <svg viewBox="0 0 100 100" class="progress-square" aria-hidden="true">
+      <rect x="5" y="5" width="90" height="90" rx="4" ry="4" class="progress-track"></rect>
+      <rect
+        x="5"
+        y="5"
+        width="90"
+        height="90"
+        rx="4"
+        ry="4"
+        class="progress-value"
+        [attr.stroke-dasharray]="perimeter + ' ' + perimeter"
+        [attr.stroke-dashoffset]="dashOffset"
+      ></rect>
+    </svg>
+
+    <button class="play-button" type="button" (click)="toggle()" [attr.aria-label]="primaryLabel">
+      <ion-icon [name]="primaryIcon"></ion-icon>
+    </button>
+  </div>
+
+  <div class="breathing-copy">
+    <p class="eyebrow">Box breathing</p>
+    <h2>{{ state === 'stopped' ? 'Rolig vejrtrækning' : phase }}</h2>
+    <p>Fire rolige trin med lyd og synkron firkant-animation.</p>
+
+    <p *ngIf="error" class="error-text">Lyden kunne ikke startes. Prøv igen.</p>
+  </div>
+</ion-card>

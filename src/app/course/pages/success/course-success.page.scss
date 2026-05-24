@@ -1,0 +1,22 @@
+.success-content {
+  --background: #f7fafb;
+}
+
+.success-panel {
+  min-height: 65vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+ion-icon {
+  font-size: 64px;
+  color: #78b12c;
+}
+
+h1,
+p {
+  margin: 0;
+}

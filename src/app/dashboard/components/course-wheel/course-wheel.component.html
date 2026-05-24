@@ -1,0 +1,21 @@
+<div class="wheel-container" aria-label="Vælg forløb">
+  <div class="wheel-pointer" aria-hidden="true"></div>
+
+  <div
+    class="wheel-stage"
+    [class.dragging]="dragging"
+    [class.snapping]="snapping"
+    [class.blinking]="blinking"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+  >
+    <img
+      src="assets/app/kunsten-at-hjul.png"
+      alt="Vælg mellem Meditation, Vejrtrækning, Udstrækning og Den perfekte morgen"
+      [style.transform]="'rotate(' + rotation + 'deg)'"
+    />
+    <div class="blink-layer" aria-hidden="true"></div>
+  </div>
+</div>

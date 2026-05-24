@@ -1,0 +1,30 @@
+<ion-content class="ion-padding course-content">
+  <section class="course-panel">
+    <h1>Tilstands-test afslutning</h1>
+    <p>Svar på spørgsmålene for at se din udvikling før og efter forløbet.</p>
+
+    <div *ngFor="let question of questions" class="question">
+      <h2>{{ question.text }}</h2>
+      <div class="scale-labels">
+        <span>{{ question.left }}</span>
+        <span>{{ question.right }}</span>
+      </div>
+      <div class="rating">
+        <ion-button
+          *ngFor="let value of ratingValues"
+          fill="clear"
+          type="button"
+          (click)="setRating(question, value)"
+          [attr.aria-label]="value + ' stjerner'"
+        >
+          <ion-icon [name]="question.value >= value ? 'star' : 'star-outline'"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <ion-button expand="block" type="button" [disabled]="loading" (click)="submit()">
+      <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
+      Afslut forløb
+    </ion-button>
+  </section>
+</ion-content>

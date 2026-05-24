@@ -1,0 +1,139 @@
+:host {
+  display: block;
+  height: 100%;
+  background: #ffffff;
+}
+
+.course-content {
+  --background: #ffffff;
+}
+
+.course-header ion-toolbar {
+  --background: #ffffff;
+  --color: var(--app-heading);
+  --border-width: 0;
+}
+
+.course-header ion-button {
+  --color: var(--app-icon-color);
+}
+
+.course-header ion-title {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.course-panel {
+  display: grid;
+  gap: 18px;
+  min-height: 100%;
+  padding: 10px 0 0;
+  background: #ffffff;
+}
+
+ion-progress-bar {
+  --progress-background: var(--app-icon-color);
+  --background: rgba(86, 120, 184, 0.14);
+}
+
+h1 {
+  margin: 18px 0 8px;
+  font-size: 1.35rem;
+}
+
+p {
+  color: #58635f;
+  line-height: 1.5;
+}
+
+.explain-step p {
+  font-size: 1rem;
+}
+
+.question {
+  padding: 14px 0;
+  border-top: 1px solid rgba(31, 41, 51, 0.08);
+}
+
+.question h2 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.scale-labels,
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scale-labels {
+  color: var(--ion-color-medium);
+  font-size: 0.78rem;
+}
+
+.rating {
+  display: flex;
+  justify-content: center;
+}
+
+.rating ion-icon {
+  font-size: 30px;
+  color: #f0b904;
+}
+
+.duration-options {
+  display: grid;
+  gap: 10px;
+}
+
+.duration-option {
+  --min-height: 54px;
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  --background: #ffffff;
+  border: 1px solid rgba(31, 41, 51, 0.12);
+  border-radius: 8px;
+}
+
+.duration-option ion-radio {
+  --color: var(--app-icon-color);
+  --color-checked: var(--app-icon-color);
+  margin-right: 12px;
+}
+
+.duration-option ion-label {
+  font-weight: 800;
+}
+
+.done-step {
+  text-align: center;
+}
+
+.done-step ion-icon {
+  color: var(--app-icon-color);
+  font-size: 54px;
+}
+
+.step-actions {
+  align-items: center;
+  margin-top: auto;
+  padding-bottom: 12px;
+}
+
+.submit-button {
+  flex: 1;
+  max-width: none;
+}
+
+@media (max-width: 520px) {
+  .step-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+}

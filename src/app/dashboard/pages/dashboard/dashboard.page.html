@@ -1,0 +1,23 @@
+<ion-content class="home-content" [scrollY]="true">
+  <section class="home-top">
+   
+  </section>
+
+  <app-course-wheel></app-course-wheel>
+
+  <div class="content-stack">
+    <aside *ngIf="showDashboardProNotice" class="access-notice">
+      <p>Opgrader til PRO for at få adgang til alle videoer og lydbøger.</p>
+      <ion-button fill="clear" type="button" aria-label="Luk besked" (click)="closeDashboardProNotice()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </aside>
+
+    <app-my-course-card
+      *ngIf="auth.token() && course"
+      [course]="course"
+      (removeCourseRequested)="removeCourse()"
+    ></app-my-course-card>
+    <app-box-breathing></app-box-breathing>
+  </div>
+</ion-content>

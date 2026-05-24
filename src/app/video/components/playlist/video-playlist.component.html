@@ -1,0 +1,47 @@
+<app-loading *ngIf="loading" label="Henter videoer"></app-loading>
+
+<ion-card *ngIf="!loading && error" class="state-card">
+  <ion-card-content>{{ error }}</ion-card-content>
+</ion-card>
+
+<ion-card *ngIf="!loading && !error && !videos.length" class="state-card">
+  <ion-card-content>Der er ingen videoer i denne oversigt.</ion-card-content>
+</ion-card>
+
+<section *ngIf="!loading && videos.length" class="playlist">
+  <header class="video-header">
+    <button type="button" class="back-link" routerLink="/home/dashboard">Tilbage</button>
+
+    <h1>{{ currentVideo?.name }} <span>({{ current + 1 }}/{{ videos.length }})</span></h1>
+
+    <button *ngIf="canStartCourse" type="button" class="header-action" (click)="startCourseRequested.emit()">Start forløb</button>
+    <button *ngIf="canFinishTask" type="button" class="header-action" (click)="finishTaskRequested.emit()">Færdig</button>
+    <span *ngIf="!canStartCourse && !canFinishTask" class="header-spacer" aria-hidden="true"></span>
+  </header>
+
+  <aside *ngIf="showAccessNotice" class="access-notice">
+    <p>
+      {{ accessNoticeText }}
+      <a *ngIf="showLoginLink" routerLink="/auth/login">Log ind nu</a>
+    </p>
+    <ion-button fill="clear" type="button" aria-label="Luk besked" (click)="closeAccessNotice.emit()">
+      <ion-icon name="close-outline"></ion-icon>
+    </ion-button>
+  </aside>
+
+  <div #track class="playlist-track" (scroll)="onTrackScroll($event)">
+    <article *ngFor="let video of videos; let index = index" class="video-slide" [class.active]="index === current">
+      <app-video-player [url]="video.url" [active]="index === current"></app-video-player>
+    </article>
+  </div>
+
+  <div class="video-dots" aria-label="Vælg video">
+    <button
+      *ngFor="let video of videos; let index = index"
+      type="button"
+      [class.active]="index === current"
+      [attr.aria-label]="'Gå til video ' + (index + 1)"
+      (click)="goTo(index)"
+    ></button>
+  </div>
+</section>

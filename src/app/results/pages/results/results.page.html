@@ -1,0 +1,47 @@
+<ion-content class="ion-padding results-content">
+  <section class="page-heading">
+    <p>Min udvikling</p>
+    <h1>Resultater</h1>
+  </section>
+
+  <section *ngIf="!rows.length" class="empty-state">
+    <ion-icon name="stats-chart-outline"></ion-icon>
+    <h2>Se din udvikling</h2>
+    <p>
+      Når du har gennemført et forløb, samler vi dine før- og eftermålinger her,
+      så du kan få et enkelt overblik over, hvordan din trivsel har flyttet sig.
+    </p>
+  <!--
+    <ion-button type="button" (click)="showExample()">Vis eksempel</ion-button>
+  -->  
+  </section>
+
+  <section *ngIf="rows.length" class="chart-panel">
+    <div class="chart-canvas">
+      <canvas #resultsChart></canvas>
+    </div>
+
+    <article *ngFor="let row of rows" class="chart-row">
+      <div class="row-heading">
+        <h2>{{ row.label }}</h2>
+        <span>{{ developmentLabel(row.after - row.before) }}</span>
+      </div>
+
+      <div class="bar-line">
+        <span>Før</span>
+        <div class="bar-track">
+          <div class="bar before" [style.width.%]="row.before * 20"></div>
+        </div>
+        <strong>{{ row.before }}</strong>
+      </div>
+
+      <div class="bar-line">
+        <span>Efter</span>
+        <div class="bar-track">
+          <div class="bar after" [style.width.%]="row.after * 20"></div>
+        </div>
+        <strong>{{ row.after }}</strong>
+      </div>
+    </article>
+  </section>
+</ion-content>
