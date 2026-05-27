@@ -20,14 +20,18 @@ export class DeepLinkService {
 
     this.initialized = true;
 
-    App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+    void App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
       this.routeFromUrl(event.url);
+    }).catch((error) => {
+      console.warn('[app] Could not register deep link listener', error);
     });
 
-    App.getLaunchUrl().then((launch) => {
+    void App.getLaunchUrl().then((launch) => {
       if (launch?.url) {
         this.routeFromUrl(launch.url);
       }
+    }).catch((error) => {
+      console.warn('[app] Could not read launch URL', error);
     });
   }
 

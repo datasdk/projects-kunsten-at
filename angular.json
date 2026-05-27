@@ -6,7 +6,10 @@
     "app": {
       "projectType": "application",
       "i18n": {
-        "sourceLocale": "da",
+        "sourceLocale": {
+          "code": "da",
+          "baseHref": ""
+        },
         "locales": {
           "en": "src/locale/en/messages.xlf"
         }
@@ -50,6 +53,7 @@
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss", "src/theme/app.scss"],
             "scripts": [],
+            "es5BrowserSupport": true,
             "browser": "src/main.ts"
           },
           "configurations": {

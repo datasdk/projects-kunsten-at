@@ -44,7 +44,9 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
 
-    void this.init();
+    void this.init().catch((error) => {
+      console.warn('[app] Auth initialization failed', error);
+    });
 
   }
 
