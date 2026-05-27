@@ -10,14 +10,19 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
+
     "cap:sync": "npx cap sync",
     "cap:android": "npx cap run android",
     "cap:ios": "npx cap run ios",
+
     "assets:generate": "npx capacitor-assets generate",
+
     "add:ios": "npx cap add ios",
     "add:android": "npx cap add android",
-    "build:android": "npm run cap:build && npx cap open android",
-    "build:ios": "npm run cap:build && npx cap open ios"
+
+    "build:android": "ionic build --prod && npm run assets:generate && npx cap sync android && npx cap open android",
+
+    "build:ios": "ionic build --prod && npm run assets:generate && npx cap sync ios && npx cap open ios"
   },
   "private": true,
   "dependencies": {
@@ -44,7 +49,7 @@
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "8.0.2",
     "@google/genai": "^1.50.1",
-    "@ionic/angular": "^8.8.8",
+    "@ionic/angular": "^8.0.0",
     "@ngspot/ngx-errors": "^5.0.0",
     "@tailflow/laravel-orion": "^4.1.0",
     "@tailwindcss/postcss": "^4.2.2",
