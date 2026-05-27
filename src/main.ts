@@ -1,8 +1,9 @@
 /// <reference types="@angular/localize" />
 
+import { importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
-import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { provideHttpClient } from '@angular/common/http';
 
 import { routes } from './app/app.routes';
@@ -19,7 +20,7 @@ window.addEventListener('unhandledrejection', (event) => {
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular({ animated: false }),
+    importProvidersFrom(IonicModule.forRoot({ animated: false })),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient()
   ],
