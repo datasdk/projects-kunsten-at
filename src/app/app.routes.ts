@@ -7,7 +7,7 @@ import { authRedirectGuard } from './auth/middleware/auth-redirect-guard';
 import { authGuard } from './auth/middleware/auth-guard';
 import { TabsPage } from './ui/tabs/tabs.page';
 import { DashboardPage } from './dashboard/pages/dashboard/dashboard.page';
-import { VideosPage } from './video/pages/videos/videos.page';
+import { VideosPage } from './media/video/pages/videos/videos.page';
 import { AudioPage } from './media/audio/pages/audio/audio.page';
 import { AudioPlayerPage } from './media/audio/pages/player/audio-player.page';
 import { CourseStartPage } from './course/pages/start/course-start.page';
@@ -74,12 +74,12 @@ export const routes: Routes = [
   },
   {
     path: 'course/statistics',
-    redirectTo: 'results',
+    redirectTo: 'home/results',
     pathMatch: 'full'
   },
   {
     path: 'course/statestics',
-    redirectTo: 'results',
+    redirectTo: 'home/results',
     pathMatch: 'full'
   },
   {
@@ -94,38 +94,35 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardPage
+      },
+      {
+        path: 'results',
+        component: ResultsPage
+      },
+      {
+        path: 'audiobook',
+        component: AudioPage
+      },
+      {
+        path: 'terms',
+        component: TermsPage
       }
     ]
   },
   {
     path: 'results',
-    component: TabsPage,
-    children: [
-      {
-        path: '',
-        component: ResultsPage
-      }
-    ]
+    redirectTo: 'home/results',
+    pathMatch: 'full'
   },
   {
     path: 'audiobook',
-    component: TabsPage,
-    children: [
-      {
-        path: '',
-        component: AudioPage
-      }
-    ]
+    redirectTo: 'home/audiobook',
+    pathMatch: 'full'
   },
   {
     path: 'terms',
-    component: TabsPage,
-    children: [
-      {
-        path: '',
-        component: TermsPage
-      }
-    ]
+    redirectTo: 'home/terms',
+    pathMatch: 'full'
   },
   {
     path: 'tabs',
@@ -139,17 +136,17 @@ export const routes: Routes = [
   },
   {
     path: 'tabs/development',
-    redirectTo: 'results',
+    redirectTo: 'home/results',
     pathMatch: 'full'
   },
   {
     path: 'tabs/results',
-    redirectTo: 'results',
+    redirectTo: 'home/results',
     pathMatch: 'full'
   },
   {
     path: 'tabs/audio',
-    redirectTo: 'audiobook',
+    redirectTo: 'home/audiobook',
     pathMatch: 'full'
   },
   {
@@ -164,7 +161,7 @@ export const routes: Routes = [
   },
   {
     path: 'tabs/terms',
-    redirectTo: 'terms',
+    redirectTo: 'home/terms',
     pathMatch: 'full'
   },
   {
@@ -189,7 +186,7 @@ export const routes: Routes = [
   },
   {
     path: 'podcast',
-    redirectTo: 'audiobook',
+    redirectTo: 'home/audiobook',
     pathMatch: 'full'
   },
   {

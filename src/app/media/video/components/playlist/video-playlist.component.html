@@ -10,13 +10,16 @@
 
 <section *ngIf="!loading && videos.length" class="playlist">
   <header class="video-header">
-    <button type="button" class="back-link" routerLink="/home/dashboard">Tilbage</button>
+    <div class="left-actions">
+      <button type="button" class="back-link" routerLink="/home/dashboard">Tilbage</button>
+    </div>
 
     <h1>{{ currentVideo?.name }} <span>({{ current + 1 }}/{{ videos.length }})</span></h1>
 
-    <button *ngIf="canStartCourse" type="button" class="header-action" (click)="startCourseRequested.emit()">Start forløb</button>
-    <button *ngIf="canFinishTask" type="button" class="header-action" (click)="finishTaskRequested.emit()">Færdig</button>
-    <span *ngIf="!canStartCourse && !canFinishTask" class="header-spacer" aria-hidden="true"></span>
+    <div class="right-actions">
+      <button *ngIf="canStartCourse" type="button" class="header-action secondary-action" (click)="startCourseRequested.emit()">Start forløb</button>
+      <button type="button" class="header-action" [disabled]="!canFinishTask" (click)="canFinishTask && finishTaskRequested.emit()">Færdig</button>
+    </div>
   </header>
 
   <aside *ngIf="showAccessNotice" class="access-notice">

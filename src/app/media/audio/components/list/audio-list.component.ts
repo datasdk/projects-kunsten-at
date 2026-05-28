@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { LoadingComponent } from '@/ui/loading/loading.component';
-import { SoundPlaylist } from '../../services/audiobook.service';
+import { SoundPlaylist } from '../../interfaces/sound-playlist.interface';
 
 @Component({
   selector: 'app-audio-list',

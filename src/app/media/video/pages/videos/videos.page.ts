@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertButton, AlertController, IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule } from '@ionic/angular';
 import { AuthService } from '@/auth/services/auth.service';
-import { CourseProgressService, ActiveTask } from '@/course/services/course-progress.service';
-import { FirebasePushService } from '@/notifications/services/firebase-push.service';
-import { VideoPlaylistComponent } from '@/video/components/playlist/video-playlist.component';
-import { VideoService, VideoItem } from '../../services/video.service';
+import { CourseProgressService } from '@/course/services/course-progress.service';
+import { ActiveTask } from '@/course/interfaces/active-task.interface';
+import { VideoPlaylistComponent } from '@/media/video/components/playlist/video-playlist.component';
+import { VideoService } from '../../services/video.service';
+import { VideoItem } from '../../interfaces/video-item.interface';
 
 @Component({
   selector: 'app-videos-page',
@@ -35,7 +36,6 @@ export class VideosPage implements OnInit, OnDestroy {
     private videoService: VideoService,
     private auth: AuthService,
     private progress: CourseProgressService,
-    private push: FirebasePushService,
     private alertController: AlertController
   ) {}
 
@@ -127,32 +127,10 @@ export class VideosPage implements OnInit, OnDestroy {
   }
 
   private async showFinishedAlert(task: ActiveTask): Promise<void> {
-    const subscribed = await this.push.isSubscribed();
-    const buttons: AlertButton[] = subscribed
-      ? [{ text: 'OK', role: 'confirm' }]
-      : [
-          {
-            text: 'Tilmeld notifikationer',
-            handler: () => {
-              void this.push.registerForPush();
-              return false;
-            }
-          },
-          { text: 'OK', role: 'cancel' }
-        ];
-
     const alert = await this.alertController.create({
       header: 'Tillykke!',
-      message: `Tillykke, du har fuldført øvelsen i ${task.days} dage.<br><a href="/results">Se dine resultater her</a>`,
-      buttons: [
-        ...buttons,
-        {
-          text: 'Se dine resultater her',
-          handler: () => {
-            void this.router.navigateByUrl('/results');
-          }
-        }
-      ]
+      message: `Du har markeret dagens øvelse som færdig. Fortsæt i ${task.days} dage for at gennemføre forløbet.`,
+      buttons: [{ text: 'OK', role: 'confirm' }]
     });
 
     await alert.present();

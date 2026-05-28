@@ -2,11 +2,19 @@
   --background: #f7fafb;
 }
 
+.course-content::part(scroll) {
+  display: flex;
+  justify-content: center;
+}
+
 .course-panel {
+  width: 100%;
+  max-width: 680px;
   background: #ffffff;
   border: 1px solid rgba(31, 41, 51, 0.08);
   border-radius: 8px;
   padding: 18px;
+  box-sizing: border-box;
   box-shadow: 0 12px 28px rgba(31, 41, 51, 0.08);
 }
 
@@ -41,6 +49,14 @@ p {
 .rating {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.rating ion-button {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  min-width: 42px;
 }
 
 .rating ion-icon {

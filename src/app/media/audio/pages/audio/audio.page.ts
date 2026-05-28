@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { AuthService } from '@/auth/services/auth.service';
 import { AudioListComponent } from '@/media/audio/components/list/audio-list.component';
-import { AudiobookService, SoundPlaylist } from '../../services/audiobook.service';
+import { SoundPlaylist } from '../../interfaces/sound-playlist.interface';
+import { AudiobookService } from '../../services/audiobook.service';
 
 @Component({
   selector: 'app-audio-page',

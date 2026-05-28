@@ -1,28 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '@services/api.service';
+import { ApiResponse } from '../interfaces/api-response.interface';
+import { SoundItem } from '../interfaces/sound-item.interface';
+import { SoundPlaylist } from '../interfaces/sound-playlist.interface';
 
-export interface MediaImage {
-  src?: string;
-}
-
-export interface SoundItem {
-  id: number | string;
-  name: string;
-  description?: string;
-  artist?: string;
-  url: string;
-  image?: MediaImage;
-}
-
-export interface SoundPlaylist {
-  id: number | string;
-  name: string;
-  sounds: SoundItem[];
-}
-
-interface ApiResponse<T> {
-  data: T;
-}
+export type { SoundItem } from '../interfaces/sound-item.interface';
+export type { SoundPlaylist } from '../interfaces/sound-playlist.interface';
 
 @Injectable({
   providedIn: 'root'

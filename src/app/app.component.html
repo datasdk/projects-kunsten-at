@@ -19,7 +19,7 @@
         </ion-menu-toggle>
 
         <ion-menu-toggle autoHide="true">
-          <ion-item detail="false" routerLink="/audiobook" routerLinkActive="selected">
+          <ion-item detail="false" routerLink="/home/audiobook" routerLinkActive="selected">
             <ion-icon name="musical-notes-outline" slot="start"></ion-icon>
             <ion-label>Lydbøger</ion-label>
           </ion-item>
@@ -75,5 +75,5 @@
   </ion-menu>
 
   <ion-loading [isOpen]="loggingOut" message="Logger af..."></ion-loading>
-  <ion-router-outlet id="main-content" [animated]="false"></ion-router-outlet>
+  <ion-router-outlet id="main-content" [animated]="true"></ion-router-outlet>
 </ion-app>

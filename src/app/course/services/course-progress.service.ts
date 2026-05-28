@@ -1,30 +1,12 @@
 import { Injectable } from '@angular/core';
 import { NativeStorageService } from '@services/native-storage.service';
+import { ActiveTask } from '../interfaces/active-task.interface';
+import { CourseQuestion } from '../interfaces/course-question.interface';
+import { CourseSnapshot } from '../interfaces/course-snapshot.interface';
 
-export interface CourseQuestion {
-  name: string;
-  text: string;
-  textShort: string;
-  value: number;
-  left: string;
-  right: string;
-}
-
-export interface CourseSnapshot {
-  index?: number | string | null;
-  category_id?: number | string | null;
-  title: string;
-  days?: number | string | null;
-  statistics: {
-    items: CourseQuestion[];
-    category?: string;
-  };
-}
-
-export interface ActiveTask {
-  days: number;
-  startdate: string;
-}
+export type { ActiveTask } from '../interfaces/active-task.interface';
+export type { CourseQuestion } from '../interfaces/course-question.interface';
+export type { CourseSnapshot } from '../interfaces/course-snapshot.interface';
 
 @Injectable({
   providedIn: 'root'

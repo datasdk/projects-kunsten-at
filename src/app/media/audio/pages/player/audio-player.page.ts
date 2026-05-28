@@ -1,10 +1,11 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AuthService } from '@/auth/services/auth.service';
 import { AudioPlayerComponent } from '@/media/audio/components/player/audio-player.component';
-import { AudiobookService, SoundItem } from '../../services/audiobook.service';
+import { SoundItem } from '../../interfaces/sound-item.interface';
+import { AudiobookService } from '../../services/audiobook.service';
 
 @Component({
   selector: 'app-audio-player-page',
@@ -21,6 +22,8 @@ export class AudioPlayerPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
+    private location: Location,
     private audiobook: AudiobookService,
     private auth: AuthService
   ) {}
@@ -42,5 +45,14 @@ export class AudioPlayerPage implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  close(): void {
+    if (window.history.length > 1) {
+      this.location.back();
+      return;
+    }
+
+    void this.router.navigateByUrl('/home/audiobook');
   }
 }

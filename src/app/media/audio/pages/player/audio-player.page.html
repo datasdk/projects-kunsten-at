@@ -1,14 +1,8 @@
-<ion-header class="ion-no-border player-header">
-  <ion-toolbar>
-    <div class="player-title-row">
-      <ion-back-button defaultHref="/audiobook" text="Tilbage"></ion-back-button>
-      <h1>Lydbøger</h1>
-      <span class="header-spacer"></span>
-    </div>
-  </ion-toolbar>
-</ion-header>
+<ion-content fullscreen class="audio-player-content">
+  <ion-button class="close-button" fill="clear" type="button" aria-label="Luk afspiller" (click)="close()">
+    <ion-icon name="close-outline"></ion-icon>
+  </ion-button>
 
-<ion-content  class="audio-player-content">
   <app-audio-player
     [sounds]="sounds"
     [initialIndex]="current"

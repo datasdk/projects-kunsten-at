@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AlertService } from '@services/alert.service';
-import { CourseProgressService, CourseQuestion } from '@/course/services/course-progress.service';
+import { CourseQuestion } from '@/course/interfaces/course-question.interface';
+import { CourseProgressService } from '@/course/services/course-progress.service';
 
 @Component({
   selector: 'app-course-stop',
@@ -53,6 +54,6 @@ export class CourseStopPage {
     });
 
     this.loading = false;
-    this.router.navigate(['/results']);
+    this.router.navigate(['/home/results']);
   }
 }

@@ -4,13 +4,14 @@ import { NavigationEnd, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { filter } from 'rxjs';
 import { AuthService } from '@/auth/services/auth.service';
+import { PageHeaderComponent } from '../page-header/page-header.component';
 
 @Component({
   selector: 'app-tabs',
   standalone: true,
   templateUrl: './tabs.page.html',
   styleUrls: ['./tabs.page.scss'],
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, IonicModule, PageHeaderComponent]
 })
 export class TabsPage implements OnInit {
   currentUrl = '';
@@ -27,10 +28,6 @@ export class TabsPage implements OnInit {
       .subscribe((event) => {
         this.currentUrl = event.urlAfterRedirects;
       });
-  }
-
-  get isWelcome(): boolean {
-    return false;
   }
 
   navigate(path: string): void {

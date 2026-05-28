@@ -4,26 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { Preferences } from '@capacitor/preferences';
 import { firstValueFrom } from 'rxjs';
+import { AuthUser } from '../interfaces/auth-user.interface';
+import { RegisterData } from '../interfaces/register-data.interface';
 
-
-interface RegisterData {
-  firstname: string;
-  lastname: string;
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
-
-export interface AuthUser {
-  id?: number | string;
-  firstname?: string;
-  lastname?: string;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  plan_id?: number | string | null;
-  memberships?: Array<{ plan_id?: number | string | null }>;
-}
+export type { AuthUser } from '../interfaces/auth-user.interface';
 
 
 @Injectable({

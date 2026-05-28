@@ -2,13 +2,10 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import Chart from 'chart.js/auto';
-import { CourseProgressService, CourseQuestion, CourseSnapshot } from '@/course/services/course-progress.service';
-
-interface ResultsRow {
-  label: string;
-  before: number;
-  after: number;
-}
+import { CourseQuestion } from '@/course/interfaces/course-question.interface';
+import { CourseSnapshot } from '@/course/interfaces/course-snapshot.interface';
+import { CourseProgressService } from '@/course/services/course-progress.service';
+import { ResultsRow } from '../../interfaces/results-row.interface';
 
 @Component({
   selector: 'app-results-page',

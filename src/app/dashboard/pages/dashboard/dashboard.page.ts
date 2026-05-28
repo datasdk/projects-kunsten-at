@@ -5,7 +5,8 @@ import { AlertController, IonContent, IonicModule } from '@ionic/angular';
 import { AuthService } from '@/auth/services/auth.service';
 import { BoxBreathingComponent } from '../../components/box-breathing/box-breathing.component';
 import { MyCourseCardComponent } from '../../components/my-course-card.component';
-import { CourseProgressService, CourseSnapshot } from '@/course/services/course-progress.service';
+import { CourseSnapshot } from '@/course/interfaces/course-snapshot.interface';
+import { CourseProgressService } from '@/course/services/course-progress.service';
 import { CourseWheelComponent } from '../../components/course-wheel/course-wheel.component';
 import { filter, Subscription } from 'rxjs';
 

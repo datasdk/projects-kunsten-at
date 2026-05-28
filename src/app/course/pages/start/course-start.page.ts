@@ -6,7 +6,8 @@ import { IonicModule } from '@ionic/angular';
 import { AuthService } from '@/auth/services/auth.service';
 import { AlertService } from '@services/alert.service';
 import { ApiService } from '@services/api.service';
-import { CourseProgressService, CourseQuestion } from '@/course/services/course-progress.service';
+import { CourseQuestion } from '@/course/interfaces/course-question.interface';
+import { CourseProgressService } from '@/course/services/course-progress.service';
 import { NotificationRegisterComponent } from '@/notifications/components/notification-register.component';
 
 @Component({

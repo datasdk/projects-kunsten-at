@@ -26,8 +26,11 @@
 .course-panel {
   display: grid;
   gap: 18px;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
   min-height: 100%;
-  padding: 10px 0 0;
+  padding: 10px 0 86px;
   background: #ffffff;
 }
 
@@ -76,6 +79,14 @@ p {
 .rating {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.rating ion-button {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  min-width: 42px;
 }
 
 .rating ion-icon {
@@ -117,9 +128,20 @@ p {
 }
 
 .step-actions {
+  position: fixed;
+  left: max(16px, calc((100vw - 680px) / 2 + 16px));
+  right: max(16px, calc((100vw - 680px) / 2 + 16px));
+  bottom: 0;
+  z-index: 2;
   align-items: center;
   margin-top: auto;
-  padding-bottom: 12px;
+  padding: 8px 0 calc(12px + var(--ion-safe-area-bottom, 0px));
+  background: #ffffff;
+  min-width: 0;
+}
+
+.step-actions ion-button {
+  min-width: 0;
 }
 
 .submit-button {
@@ -130,7 +152,7 @@ p {
 @media (max-width: 520px) {
   .step-actions {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .submit-button {

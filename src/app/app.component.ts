@@ -144,10 +144,7 @@ export class AppComponent implements OnInit {
   private isShelllessRoute(url: string): boolean {
     const path = url.split('?')[0];
     return path.startsWith('/auth')
-      || path.startsWith('/welcome')
-      || path.startsWith('/videos')
-      || path.startsWith('/audiobook/player')
-      || path.startsWith('/course/start');
+      || path.startsWith('/welcome');
   }
 
   private async hideSplashWhenAppIsReady(): Promise<void> {

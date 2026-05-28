@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { LoadingComponent } from '@/ui/loading/loading.component';
-import { SoundItem } from '../../services/audiobook.service';
+import { SoundItem } from '../../interfaces/sound-item.interface';
 
 @Component({
   selector: 'app-audio-player',

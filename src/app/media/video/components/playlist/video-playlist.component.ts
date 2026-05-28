@@ -3,7 +3,7 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Outpu
 import { RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { LoadingComponent } from '@/ui/loading/loading.component';
-import { VideoItem } from '../../services/video.service';
+import { VideoItem } from '../../interfaces/video-item.interface';
 import { VideoPlayerComponent } from '../player/video-player.component';
 
 @Component({

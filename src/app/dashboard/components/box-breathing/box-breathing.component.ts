@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
+import { NavigationStart, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-
-type BreathingState = 'stopped' | 'playing';
+import { filter, Subscription } from 'rxjs';
+import { BreathingState } from '../../interfaces/breathing-state.interface';
 
 @Component({
   selector: 'app-box-breathing',
@@ -22,6 +23,15 @@ export class BoxBreathingComponent implements OnDestroy {
   private readonly cycleDurationMs = 16000;
   private audio?: HTMLAudioElement;
   private animationFrame?: number;
+  private routeSubscription?: Subscription;
+
+  constructor(private router: Router) {
+    this.routeSubscription = this.router.events
+      .pipe(filter((event): event is NavigationStart => event instanceof NavigationStart))
+      .subscribe(() => {
+        this.stop();
+      });
+  }
 
   get isPlaying(): boolean {
     return this.state === 'playing';
@@ -78,6 +88,7 @@ export class BoxBreathingComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.routeSubscription?.unsubscribe();
     this.stop();
 
     if (this.audio) {

@@ -8,7 +8,13 @@
   place-items: center;
   align-content: center;
   gap: 12px;
+  width: min(100%, 520px);
+  margin: 0 auto;
   text-align: center;
+}
+
+.success-panel ion-button {
+  max-width: 100%;
 }
 
 ion-icon {

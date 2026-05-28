@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: var(--app-heading);
+  --border-width: 0;
+}
+
+ion-menu-button {
+  --color: var(--app-icon-color);
+}
+
+ion-title {
+  color: var(--app-heading);
+  font-size: 1rem;
+  font-weight: 800;
+}

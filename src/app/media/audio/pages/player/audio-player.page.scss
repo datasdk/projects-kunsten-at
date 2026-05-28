@@ -1,37 +1,27 @@
-.player-header ion-toolbar {
-  --background: #ffffff;
-  --color: var(--app-heading);
-}
-
-.player-header ion-back-button {
-  --color: var(--app-icon-color);
-}
-
-.player-title-row {
-  display: grid;
-  grid-template-columns: minmax(72px, auto) minmax(0, 1fr) minmax(72px, auto);
-  align-items: center;
-  min-height: 58px;
-  padding: 0 8px;
-}
-
-.player-title-row h1 {
-  margin: 0;
-  color: var(--app-heading);
-  font-size: 1rem;
-  font-weight: 800;
-  text-align: center;
-}
-
-.header-spacer {
-  display: block;
-  width: 72px;
-}
-
 .audio-player-content {
-  --background: #333052 url('/assets/app/player-bg.jpg') center / cover no-repeat;
+  --background: #101d3a;
   --padding-top: 0;
   --padding-end: 0;
   --padding-bottom: 0;
   --padding-start: 0;
+}
+
+.close-button {
+  position: fixed;
+  top: calc(10px + var(--ion-safe-area-top, 0px));
+  right: 12px;
+  z-index: 10;
+  --color: #ffffff;
+  --background: rgba(7, 14, 32, 0.42);
+  --background-hover: rgba(7, 14, 32, 0.56);
+  --background-activated: rgba(7, 14, 32, 0.68);
+  --border-radius: 999px;
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 46px;
+  height: 46px;
+}
+
+.close-button ion-icon {
+  font-size: 1.65rem;
 }

@@ -18,9 +18,12 @@ export class VimeoService {
 
     parsed.searchParams.set('autoplay', '0');
     parsed.searchParams.set('playsinline', '1');
-    parsed.searchParams.set('controls', '1');
+    parsed.searchParams.set('controls', '0');
     parsed.searchParams.set('background', '0');
     parsed.searchParams.set('muted', '0');
+    parsed.searchParams.set('title', '0');
+    parsed.searchParams.set('byline', '0');
+    parsed.searchParams.set('portrait', '0');
     return parsed.toString();
   }
 

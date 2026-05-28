@@ -1,12 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-
-interface WheelCourse {
-  id: number;
-  title: string;
-}
+import { WheelCourse } from '../../interfaces/wheel-course.interface';
 
 @Component({
   selector: 'app-course-wheel',
@@ -33,13 +30,14 @@ export class CourseWheelComponent implements OnDestroy {
   private startX = 0;
   private startY = 0;
   private moved = false;
+  private pointerId: number | null = null;
   private lastTickIndex = this.indexAtPointer(this.rotation);
-  private navigationTimer?: number;
   private blinkTimer?: number;
-  private readonly tick = new Audio('https://media.kunsten-at.dk/lyd/app/click.mp3');
+  private snapTimer?: number;
+  private readonly click = new Audio('https://media.kunsten-at.dk/lyd/app/click.mp3');
 
   constructor(private router: Router) {
-    this.tick.preload = 'auto';
+    this.click.preload = 'auto';
   }
 
   onPointerDown(event: PointerEvent): void {
@@ -50,39 +48,57 @@ export class CourseWheelComponent implements OnDestroy {
     const element = event.currentTarget as HTMLElement;
     this.dragging = true;
     this.blinking = false;
-    this.selectedIndex = null;
     this.moved = false;
     this.startX = event.clientX;
     this.startY = event.clientY;
     this.startAngle = this.pointerAngle(event, element);
     this.startRotation = this.rotation;
+    this.pointerId = event.pointerId;
     element.setPointerCapture(event.pointerId);
+    event.preventDefault();
   }
 
   onPointerMove(event: PointerEvent): void {
-    if (!this.dragging || this.snapping) {
+    if (!this.dragging || this.snapping || event.pointerId !== this.pointerId) {
       return;
     }
 
     const element = event.currentTarget as HTMLElement;
     const distance = Math.hypot(event.clientX - this.startX, event.clientY - this.startY);
     this.moved = this.moved || distance > 8;
+
+    if (!this.moved) {
+      return;
+    }
+
     this.rotation = this.startRotation + this.pointerAngle(event, element) - this.startAngle;
     this.playTickIfNeeded();
+    event.preventDefault();
   }
 
   onPointerUp(event: PointerEvent): void {
-    if (!this.dragging || this.snapping) {
+    if (!this.dragging || this.snapping || event.pointerId !== this.pointerId) {
       return;
     }
 
     const element = event.currentTarget as HTMLElement;
     this.dragging = false;
+    this.pointerId = null;
     if (element.hasPointerCapture(event.pointerId)) {
       element.releasePointerCapture(event.pointerId);
     }
 
-    this.snapAndOpen(this.moved ? this.indexAtPointer(this.rotation) : this.indexAtEvent(event, element));
+    const index = this.moved ? this.indexAtPointer(this.rotation) : this.indexAtEvent(event, element);
+
+    if (this.moved) {
+      this.snapToIndex(index);
+      this.blinkSelection(index);
+      event.preventDefault();
+      return;
+    }
+
+    this.blinkAndOpen(index);
+    event.preventDefault();
   }
 
   reset(): void {
@@ -91,17 +107,18 @@ export class CourseWheelComponent implements OnDestroy {
     this.blinking = false;
     this.selectedIndex = null;
     this.moved = false;
+    this.pointerId = null;
     this.rotation = 0;
     this.lastTickIndex = this.indexAtPointer(this.rotation);
-
-    if (this.navigationTimer) {
-      window.clearTimeout(this.navigationTimer);
-      this.navigationTimer = undefined;
-    }
 
     if (this.blinkTimer) {
       window.clearTimeout(this.blinkTimer);
       this.blinkTimer = undefined;
+    }
+
+    if (this.snapTimer) {
+      window.clearTimeout(this.snapTimer);
+      this.snapTimer = undefined;
     }
   }
 
@@ -109,24 +126,60 @@ export class CourseWheelComponent implements OnDestroy {
     this.reset();
   }
 
-  private snapAndOpen(index: number): void {
+  private blinkAndOpen(index: number): void {
     this.selectedIndex = index;
     this.snapping = true;
-    this.rotation = this.snapRotation(index);
     this.playClick();
+    this.openCourse(index);
+  }
 
+  private openCourse(index: number): void {
+    const course = this.courses[index];
+
+    if (!course) {
+      this.snapping = false;
+      return;
+    }
+
+    void this.router.navigate(['/videos'], {
+      queryParams: {
+        category_id: course.id,
+        index: 0
+      }
+    });
+  }
+
+  private blinkSelection(index: number): void {
+    this.selectedIndex = index;
+    this.startBlink();
+  }
+
+  private snapToIndex(index: number): void {
+    this.selectedIndex = index;
+    this.snapping = true;
+    this.rotation = this.nearestRotationForIndex(index, this.rotation);
+    this.lastTickIndex = index;
+
+    if (this.snapTimer) {
+      window.clearTimeout(this.snapTimer);
+    }
+
+    this.snapTimer = window.setTimeout(() => {
+      this.snapping = false;
+      this.snapTimer = undefined;
+    }, 190);
+  }
+
+  private startBlink(): void {
+    if (this.blinkTimer) {
+      window.clearTimeout(this.blinkTimer);
+      this.blinkTimer = undefined;
+    }
+
+    this.blinking = false;
     this.blinkTimer = window.setTimeout(() => {
       this.blinking = true;
     }, 120);
-
-    this.navigationTimer = window.setTimeout(() => {
-      void this.router.navigate(['/videos'], {
-        queryParams: {
-          category_id: this.courses[index].id,
-          index: 0
-        }
-      });
-    }, 1050);
   }
 
   private playTickIfNeeded(): void {
@@ -137,24 +190,18 @@ export class CourseWheelComponent implements OnDestroy {
     }
 
     this.lastTickIndex = index;
-    this.tick.currentTime = 0;
-    void this.tick.play().catch(() => undefined);
+    this.vibrateTick();
   }
 
   private playClick(): void {
-    this.tick.currentTime = 0;
-    void this.tick.play().catch(() => undefined);
+    this.click.currentTime = 0;
+    void this.click.play().catch(() => undefined);
   }
 
   private indexAtPointer(rotation: number): number {
     const normalized = ((rotation % 360) + 360) % 360;
     const topAngleOnImage = (360 - normalized) % 360;
     return Math.floor(topAngleOnImage / 90);
-  }
-
-  private snapRotation(index: number): number {
-    const currentTurns = Math.round(this.rotation / 360);
-    return currentTurns * 360 - index * 90;
   }
 
   private pointerAngle(event: PointerEvent, element: HTMLElement): number {
@@ -167,5 +214,20 @@ export class CourseWheelComponent implements OnDestroy {
   private indexAtEvent(event: PointerEvent, element: HTMLElement): number {
     const imageAngle = (this.pointerAngle(event, element) - this.rotation + 360) % 360;
     return Math.floor(imageAngle / 90);
+  }
+
+  private nearestRotationForIndex(index: number, currentRotation: number): number {
+    const target = (360 - (index * 90 + 45)) % 360;
+    const offset = this.shortestAngleDelta(currentRotation, target);
+    return currentRotation + offset;
+  }
+
+  private shortestAngleDelta(from: number, to: number): number {
+    return ((to - from + 540) % 360) - 180;
+  }
+
+  private vibrateTick(): void {
+    navigator.vibrate?.(1);
+    void Haptics.impact({ style: ImpactStyle.Light }).catch(() => undefined);
   }
 }

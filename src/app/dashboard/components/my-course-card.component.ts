@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { CourseSnapshot } from '@/course/services/course-progress.service';
+import { CourseSnapshot } from '@/course/interfaces/course-snapshot.interface';
 
 @Component({
   selector: 'app-my-course-card',

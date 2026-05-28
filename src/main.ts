@@ -20,7 +20,7 @@ window.addEventListener('unhandledrejection', (event) => {
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    importProvidersFrom(IonicModule.forRoot({ animated: false })),
+    importProvidersFrom(IonicModule.forRoot({ animated: true })),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient()
   ],

@@ -1,26 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '@services/api.service';
+import { ApiResponse } from '../interfaces/api-response.interface';
+import { VideoItem } from '../interfaces/video-item.interface';
+import { VideoPlaylist } from '../interfaces/video-playlist.interface';
 
-export interface MediaImage {
-  src?: string;
-}
-
-export interface VideoItem {
-  id: number | string;
-  name: string;
-  url: string;
-  tags?: string[];
-}
-
-export interface VideoPlaylist {
-  id?: number | string;
-  name?: string;
-  videos: VideoItem[];
-}
-
-interface ApiResponse<T> {
-  data: T;
-}
+export type { VideoItem } from '../interfaces/video-item.interface';
+export type { VideoPlaylist } from '../interfaces/video-playlist.interface';
 
 @Injectable({
   providedIn: 'root'

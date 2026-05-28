@@ -13,12 +13,7 @@ import {
 import { ApiService } from '@services/api.service';
 import { NativeStorageService } from '@services/native-storage.service';
 import { notificationEnv } from '../notification-env';
-
-interface DeviceRegistrationPayload {
-  token: string;
-  device_id: string;
-  device_type: string;
-}
+import { DeviceRegistrationPayload } from '../interfaces/device-registration-payload.interface';
 
 @Injectable({
   providedIn: 'root'
