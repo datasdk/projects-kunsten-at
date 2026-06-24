@@ -20,6 +20,10 @@ import { DeviceRegistrationPayload } from '../interfaces/device-registration-pay
 })
 export class FirebasePushService {
   private listenersReady = false;
+  private registrationWaiter?: {
+    resolve: (success: boolean) => void;
+    timeout: ReturnType<typeof setTimeout>;
+  };
 
   constructor(
     private api: ApiService,
@@ -37,10 +41,13 @@ export class FirebasePushService {
 
     await Promise.all([
       PushNotifications.addListener('registration', (token: Token) => {
-        void this.handleRegistration(token);
+        void this.handleRegistration(token).then((success) => {
+          this.resolveRegistration(success);
+        });
       }),
       PushNotifications.addListener('registrationError', (error: RegistrationError) => {
         this.logRegistrationError(error);
+        this.resolveRegistration(false);
       }),
       PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
         void this.handleForegroundNotification(notification);
@@ -90,11 +97,52 @@ export class FirebasePushService {
     }
 
     try {
-      await this.register();
-      return { success: true, msg: 'Registrering startet.' };
+      await this.initialize();
+
+      let permission = await this.checkPermissions();
+
+      if (permission.receive === 'prompt' || permission.receive === 'prompt-with-rationale') {
+        permission = await this.requestPermissions();
+      }
+
+      if (permission.receive !== 'granted') {
+        await this.storage.setString(notificationEnv.push.subscribedStorageKey, 'false');
+        return { success: false, msg: 'Tilladelse til push-notifikationer blev ikke givet.' };
+      }
+
+      const storedToken = await this.getStoredToken();
+
+      if (storedToken && await this.isSubscribed()) {
+        return { success: true, msg: 'Notifikationer er aktiveret.' };
+      }
+
+      await this.createDefaultChannel();
+      const registration = this.waitForRegistrationResult();
+      await PushNotifications.register();
+
+      const success = await registration;
+      return success
+        ? { success: true, msg: 'Notifikationer er aktiveret.' }
+        : { success: false, msg: 'Device kunne ikke registreres til push-notifikationer lige nu.' };
     } catch (error) {
       console.error('Push registration failed', error);
       return { success: false, msg: 'Tilladelse til push-notifikationer blev ikke givet.' };
+    }
+  }
+
+  async unregisterForPush(): Promise<{ success: boolean; msg: string }> {
+    if (!Capacitor.isNativePlatform()) {
+      return { success: false, msg: 'Push-notifikationer kan kun ændres i Android/iOS-buildet.' };
+    }
+
+    try {
+      await PushNotifications.unregister();
+      await this.storage.remove(notificationEnv.push.tokenStorageKey);
+      await this.storage.setString(notificationEnv.push.subscribedStorageKey, 'false');
+      return { success: true, msg: 'Notifikationer er slået fra.' };
+    } catch (error) {
+      console.error('Push unregister failed', error);
+      return { success: false, msg: 'Notifikationer kunne ikke slås fra lige nu.' };
     }
   }
 
@@ -106,7 +154,7 @@ export class FirebasePushService {
     return this.storage.getString(notificationEnv.push.tokenStorageKey);
   }
 
-  private async handleRegistration(token: Token): Promise<void> {
+  private async handleRegistration(token: Token): Promise<boolean> {
     await this.storage.setString(notificationEnv.push.tokenStorageKey, token.value);
 
     if (notificationEnv.push.logTokenInDevelopment) {
@@ -116,9 +164,11 @@ export class FirebasePushService {
     try {
       await this.registerDevice(token.value);
       await this.storage.setString(notificationEnv.push.subscribedStorageKey, 'true');
+      return true;
     } catch (error) {
       await this.storage.setString(notificationEnv.push.subscribedStorageKey, 'false');
       console.error('Push token received, but backend registration failed', error);
+      return false;
     }
   }
 
@@ -174,6 +224,39 @@ export class FirebasePushService {
   private async registerDevice(token: string): Promise<void> {
     const payload = await this.devicePayload(token);
     await this.api.post(notificationEnv.push.tokenRegistrationEndpoint, payload);
+  }
+
+  private waitForRegistrationResult(): Promise<boolean> {
+    this.clearRegistrationWaiter();
+
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        this.registrationWaiter = undefined;
+        resolve(false);
+      }, 15000);
+
+      this.registrationWaiter = { resolve, timeout };
+    });
+  }
+
+  private resolveRegistration(success: boolean): void {
+    if (!this.registrationWaiter) {
+      return;
+    }
+
+    const waiter = this.registrationWaiter;
+    this.registrationWaiter = undefined;
+    clearTimeout(waiter.timeout);
+    waiter.resolve(success);
+  }
+
+  private clearRegistrationWaiter(): void {
+    if (!this.registrationWaiter) {
+      return;
+    }
+
+    clearTimeout(this.registrationWaiter.timeout);
+    this.registrationWaiter = undefined;
   }
 
   private async devicePayload(token: string): Promise<DeviceRegistrationPayload> {

@@ -1,17 +1,28 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  min-height: 0;
   background: #ffffff;
 }
 
 .course-content {
+  flex: 1;
+  min-height: 0;
   --background: #ffffff;
+  --padding-bottom: 16px;
 }
 
 .course-header ion-toolbar {
   --background: #ffffff;
   --color: var(--app-heading);
   --border-width: 0;
+  position: relative;
+}
+
+.course-header ion-buttons {
+  position: relative;
+  z-index: 2;
 }
 
 .course-header ion-button {
@@ -19,8 +30,14 @@
 }
 
 .course-header ion-title {
+  position: absolute;
+  inset: 0 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1rem;
   font-weight: 800;
+  text-align: center;
 }
 
 .course-panel {
@@ -29,9 +46,15 @@
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  min-height: 100%;
-  padding: 10px 0 86px;
+  min-height: auto;
+  padding: 10px 0 0;
   background: #ffffff;
+}
+
+.step-body {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
 }
 
 ion-progress-bar {
@@ -40,11 +63,12 @@ ion-progress-bar {
 }
 
 h1 {
-  margin: 18px 0 8px;
+  margin: 8px 0 2px;
   font-size: 1.35rem;
 }
 
 p {
+  margin: 0;
   color: #58635f;
   line-height: 1.5;
 }
@@ -54,7 +78,8 @@ p {
 }
 
 .question {
-  padding: 14px 0;
+  min-width: 0;
+  padding: 12px 0;
   border-top: 1px solid rgba(31, 41, 51, 0.08);
 }
 
@@ -64,8 +89,7 @@ p {
   line-height: 1.35;
 }
 
-.scale-labels,
-.step-actions {
+.scale-labels {
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -91,7 +115,11 @@ p {
 
 .rating ion-icon {
   font-size: 30px;
-  color: #f0b904;
+  color: var(--ion-color-medium);
+}
+
+.rating ion-button.selected ion-icon {
+  color: var(--rating-color);
 }
 
 .duration-options {
@@ -127,35 +155,19 @@ p {
   font-size: 54px;
 }
 
-.step-actions {
-  position: fixed;
-  left: max(16px, calc((100vw - 680px) / 2 + 16px));
-  right: max(16px, calc((100vw - 680px) / 2 + 16px));
-  bottom: 0;
-  z-index: 2;
-  align-items: center;
-  margin-top: auto;
-  padding: 8px 0 calc(12px + var(--ion-safe-area-bottom, 0px));
+.course-footer,
+.course-footer ion-toolbar {
+  --background: #ffffff;
   background: #ffffff;
-  min-width: 0;
 }
 
-.step-actions ion-button {
-  min-width: 0;
+.step-actions {
+  width: min(100%, 680px);
+  margin: 0 auto;
+  padding: 6px 16px 8px;
 }
 
 .submit-button {
-  flex: 1;
-  max-width: none;
-}
-
-@media (max-width: 520px) {
-  .step-actions {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .submit-button {
-    width: 100%;
-  }
+  width: 100%;
+  margin: 0;
 }

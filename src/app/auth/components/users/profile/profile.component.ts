@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Users } from '../users.model'; // ret path
 import { CommonModule } from '@angular/common';
 
-
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -11,19 +10,15 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./profile.component.scss'],
 })
 
-
 export class ProfileComponent implements OnInit {
 
   users: Users[] = [];
 
   constructor() {}
 
-
   async ngOnInit() {
 
-
   }
-
 
   async loadUsers() {
 
@@ -40,8 +35,6 @@ export class ProfileComponent implements OnInit {
 
     }
 
-
   }
-
 
 }

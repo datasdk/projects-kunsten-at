@@ -1,4 +1,4 @@
-<app-loading *ngIf="loading" label="Henter lyd"></app-loading>
+<app-loading *ngIf="loading" label="" tone="light"></app-loading>
 
 <ion-card *ngIf="!loading && error" class="state-card">
   <ion-card-content>{{ error }}</ion-card-content>
@@ -8,9 +8,8 @@
   <img [src]="currentSound.image?.src || 'assets/kunsten-at/images/sound.jpg'" [alt]="currentSound.name" />
 
   <section class="details">
-    <p class="eyebrow">{{ current + 1 }} / {{ sounds.length }}</p>
     <h1>{{ currentSound.name }}</h1>
-    <p *ngIf="currentSound.artist">{{ currentSound.artist }}</p>
+    <p class="author">Thomas Fryd</p>
   </section>
 
   <div class="time-row">
@@ -21,6 +20,7 @@
   <ion-range
     min="0"
     max="100"
+    [ticks]="false"
     [value]="progress"
     (ionChange)="seek($event.detail.value)"
     aria-label="Afspilningsposition"
@@ -39,6 +39,8 @@
       <ion-icon name="play-skip-forward-circle-outline"></ion-icon>
     </ion-button>
   </div>
+
+  <p class="eyebrow">{{ current + 1 }} / {{ sounds.length }}</p>
 </main>
 
 <ion-card *ngIf="!loading && !error && !currentSound" class="state-card">

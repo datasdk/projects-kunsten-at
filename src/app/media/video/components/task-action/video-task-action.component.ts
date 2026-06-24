@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+
 import { AlertService } from '@services/alert.service';
+import { AuthService } from '@/auth/services/auth.service';
 import { CourseProgressService } from '@/course/services/course-progress.service';
 import { VideoItem } from '../../interfaces/video-item.interface';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-video-task-action',
   standalone: true,
   templateUrl: './video-task-action.component.html',
   styleUrls: ['./video-task-action.component.scss'],
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS]
 })
 export class VideoTaskActionComponent implements OnChanges {
   @Input({ required: true }) video!: VideoItem;
@@ -25,7 +27,8 @@ export class VideoTaskActionComponent implements OnChanges {
   constructor(
     private progress: CourseProgressService,
     private router: Router,
-    private alerts: AlertService
+    private alerts: AlertService,
+    private auth: AuthService
   ) {}
 
   async ngOnChanges(): Promise<void> {
@@ -40,11 +43,11 @@ export class VideoTaskActionComponent implements OnChanges {
     const task = await this.progress.getActiveTask(this.categoryId, this.index);
 
     if (checked && task && this.progress.isTaskPeriodComplete(task)) {
+      await this.progress.setTaskDone(this.categoryId, this.index, true);
       await this.alerts.alert(
         'Tillykke!',
         'Du er færdig med dit forløb. Udfyld afslutningstesten for at se din udvikling.'
       );
-      await this.progress.setTaskDone(this.categoryId, this.index, true);
       this.router.navigate(['/course/stop'], {
         queryParams: {
           category_id: this.categoryId,
@@ -58,8 +61,20 @@ export class VideoTaskActionComponent implements OnChanges {
     await this.refreshState();
   }
 
-  startCourse(): void {
-    this.router.navigate(['/course/start'], {
+  get canStartCourse(): boolean {
+    return !!this.auth.token() && !this.activeTask && !this.hasActiveTask;
+  }
+
+  async startCourse(): Promise<void> {
+    if (!(await this.auth.isLoggedin())) {
+      const destination = `/videos?category_id=${this.categoryId ?? ''}&index=${this.index}`;
+      await this.auth.setLoginRedirect(destination);
+      await this.alerts.alert('Log ind kræves', 'Du er ikke logget ind. Derfor er kun én video tilgængelig. Log ind for at få fuld adgang.', ['Log ind']);
+      await this.router.navigateByUrl('/auth/login');
+      return;
+    }
+
+    await this.router.navigate(['/course/start'], {
       queryParams: {
         category_id: this.categoryId,
         index: this.index

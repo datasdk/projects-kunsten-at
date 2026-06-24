@@ -1,5 +1,5 @@
 <ion-app>
-  <ion-menu *ngIf="!hideRootMenu" contentId="main-content" menuId="main-menu" side="start">
+  <ion-menu *ngIf="!hideRootMenu" contentId="main-content" menuId="main-menu" side="start" [swipeGesture]="!disableSwipeBack">
     <div class="menu-header">
       <strong>MENU</strong>
       <ion-menu-toggle autoHide="true">
@@ -56,6 +56,27 @@
 
       <ion-list lines="none" class="app-menu-list app-menu-footer">
         <ion-menu-toggle autoHide="true">
+          <ion-item detail="false" routerLink="/home/terms" routerLinkActive="selected">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            <ion-label>Handelsbetingelser</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-menu-toggle autoHide="true">
+          <ion-item detail="false" routerLink="/home/help" routerLinkActive="selected">
+            <ion-icon name="help-circle-outline" slot="start"></ion-icon>
+            <ion-label>Hjælp</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-menu-toggle autoHide="true">
+          <ion-item detail="false" routerLink="/home/settings" routerLinkActive="selected">
+            <ion-icon name="settings-outline" slot="start"></ion-icon>
+            <ion-label>Indstillinger</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-menu-toggle autoHide="true">
           <ion-item *ngIf="auth.token(); else loginLink" button detail="false" (click)="logout()">
             <ion-icon name="log-out-outline" slot="start"></ion-icon>
             <ion-label>Log af</ion-label>
@@ -75,5 +96,5 @@
   </ion-menu>
 
   <ion-loading [isOpen]="loggingOut" message="Logger af..."></ion-loading>
-  <ion-router-outlet id="main-content" [animated]="true"></ion-router-outlet>
+  <ion-router-outlet id="main-content" [animated]="false" [swipeGesture]="!disableSwipeBack"></ion-router-outlet>
 </ion-app>

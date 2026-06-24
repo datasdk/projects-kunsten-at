@@ -3,93 +3,86 @@
 }
 
 .playlist {
-  --video-body-height: calc(100svh - 58px - var(--ion-safe-area-top, 0px));
   position: relative;
-  min-height: 100svh;
+  height: 100svh;
   overflow: hidden;
-  background: #000000;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(86, 120, 184, 0.11), rgba(0, 0, 0, 0) 32%),
+    linear-gradient(180deg, #07090f, #000000 58%, #040506);
+  animation: video-page-enter 300ms ease-out both;
 }
 
-.video-header {
-  position: relative;
-  z-index: 7;
-  display: grid;
-  grid-template-columns: minmax(84px, auto) minmax(0, 1fr) minmax(84px, auto);
-  gap: 8px;
-  align-items: center;
-  min-height: calc(58px + var(--ion-safe-area-top, 0px));
-  padding: calc(8px + var(--ion-safe-area-top, 0px)) 12px 8px;
-  background: #ffffff;
-  box-shadow: 0 1px 0 rgba(36, 51, 45, 0.08);
+@keyframes video-page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
 }
 
-.left-actions,
-.right-actions {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-}
-
-.right-actions {
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-h1 {
-  margin: 0;
-  overflow: hidden;
-  color: var(--app-heading);
-  font-size: 0.98rem;
-  line-height: 1.25;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-h1 span {
-  color: #69746f;
-  font-weight: 700;
-}
-
-.back-link,
-.header-action {
-  min-width: 0;
-  max-width: 100%;
-  padding: 8px 0;
+.close-button,
+.start-course-button,
+.test-finish-button,
+.finish-bubble {
+  position: absolute;
+  z-index: 9;
   border: 0;
-  background: transparent;
-  color: var(--app-icon-color);
   font: inherit;
-  font-size: 0.9rem;
   font-weight: 900;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.back-link {
-  text-align: left;
+.close-button {
+  top: calc(12px + var(--ion-safe-area-top, 0px));
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  --background: rgba(0, 0, 0, 0.52);
+  --background-hover: rgba(0, 0, 0, 0.62);
+  --background-activated: rgba(0, 0, 0, 0.72);
+  --border-radius: 999px;
+  --color: #ffffff;
+  --padding-start: 0;
+  --padding-end: 0;
 }
 
-.header-action {
-  text-align: right;
+.close-button ion-icon {
+  color: #ffffff;
+  font-size: 1.55rem;
 }
 
-.header-action:disabled {
-  color: #9ba8a2;
-  opacity: 0.58;
+.start-course-button {
+  top: calc(14px + var(--ion-safe-area-top, 0px));
+  left: 12px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--app-icon-color);
+  color: #fff;
+  font-size: 0.86rem;
+  box-shadow: 0 10px 22px rgba(86, 120, 184, 0.28);
 }
 
-.secondary-action {
-  font-size: 0.78rem;
+.test-finish-button {
+  top: calc(62px + var(--ion-safe-area-top, 0px));
+  left: 12px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.62);
+  color: #ffffff;
+  font-size: 0.82rem;
 }
 
 .access-notice {
   position: absolute;
-  top: calc(70px + var(--ion-safe-area-top, 0px));
+  top: calc(68px + var(--ion-safe-area-top, 0px));
   left: 14px;
   right: 14px;
-  z-index: 6;
+  z-index: 8;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
@@ -97,77 +90,129 @@ h1 span {
   padding: 12px 10px 12px 14px;
   border-radius: 8px;
   background: rgba(15, 18, 24, 0.78);
-  color: #ffffff;
+  color: #fff;
 }
 
 .access-notice p {
   margin: 0;
 }
 
-.access-notice a {
-  color: #ffffff;
+.notice-login {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-weight: 900;
+  text-decoration: underline;
 }
 
-.access-notice ion-button {
-  --color: #ffffff;
-  --padding-start: 0;
-  --padding-end: 0;
+.notice-dismiss {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .playlist-track {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 100%;
-  height: var(--video-body-height);
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
 }
 
 .video-slide {
+  flex: 0 0 100%;
   min-width: 0;
-  height: var(--video-body-height);
-  scroll-snap-align: start;
+  height: 100%;
+  transition: transform 260ms ease;
+}
+
+.playlist-track.dragging .video-slide {
+  transition: none;
+}
+
+.finish-bubble {
+  left: 50%;
+  bottom: calc(72px + var(--ion-safe-area-bottom, 0px));
+  min-height: 44px;
+  max-width: 76vw;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--app-heading);
+  font-size: 0.9rem;
+  transform: translateX(-50%);
+}
+
+.finish-bubble:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.video-title {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: calc(42px + var(--ion-safe-area-bottom, 0px));
+  z-index: 8;
+  margin: 0;
+  overflow: hidden;
+  color: #fff;
+  font-size: clamp(1rem, 4vw, 1.24rem);
+  line-height: 1.2;
+  text-align: center;
+  text-shadow: 0px 0px 3px black;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .video-dots {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(18px + var(--ion-safe-area-bottom, 0px));
+  bottom: calc(20px + var(--ion-safe-area-bottom, 0px));
   z-index: 8;
   display: flex;
   justify-content: center;
-  gap: 7px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 6px 14px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.video-dots::-webkit-scrollbar {
+  display: none;
+}
+
+.video-dots-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: max-content;
 }
 
 .video-dots button {
-  width: 7px;
-  height: 7px;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
   padding: 0;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
+  background: rgba(255, 255, 255, 0.44);
+  transition: transform 180ms ease, background-color 180ms ease;
 }
 
 .video-dots button.active {
-  transform: scale(1.24);
-  background: #ffffff;
-}
-
-@media (max-width: 380px) {
-  .video-header {
-    grid-template-columns: minmax(44px, auto) minmax(0, 1fr) minmax(70px, auto);
-  }
-
-  .back-link,
-  .secondary-action {
-    display: none;
-  }
-
-  .header-action {
-    font-size: 0.82rem;
-  }
+  transform: scale(1.22);
+  background: #fff;
 }

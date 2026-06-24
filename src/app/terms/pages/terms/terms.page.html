@@ -1,5 +1,5 @@
 <ion-content class="ion-padding terms-content" [scrollY]="true">
-  <div class="terms-scroll">
+  <div class="terms-scroll animate__animated animate__fadeInUp app-animate">
     <section class="page-heading">
       <p>Kunsten at tæmme en tiger</p>
       <h1>Betingelser</h1>
@@ -7,14 +7,12 @@
 
     <app-loading *ngIf="loading" label="Henter betingelser"></app-loading>
 
-    <ion-card *ngIf="!loading && error">
-      <ion-card-content>{{ error }}</ion-card-content>
-    </ion-card>
+    <p *ngIf="!loading && error" class="state-message">{{ error }}</p>
 
     <article *ngIf="!loading && content" class="terms-body" [innerHTML]="content"></article>
 
-    <ion-card *ngIf="!loading && !error && !content">
-      <ion-card-content>Der er ingen betingelser at vise.</ion-card-content>
-    </ion-card>
+    <p *ngIf="!loading && !error && !content" class="state-message">
+      Der er ingen betingelser at vise.
+    </p>
   </div>
 </ion-content>

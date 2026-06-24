@@ -1,23 +1,7 @@
 <ion-card *ngIf="course" class="course-card">
   <ion-card-header>
-
     <div class="course-title-block">
-      
       <ion-card-title>Fortsæt forløb</ion-card-title>
-
-
-    </div>
-
-    <ion-button 
-      class="options-button" 
-      fill="clear" 
-      type="button" 
-      aria-label="Forløbsindstillinger" (click)="menuOpen = !menuOpen">
-      <ion-icon name="ellipsis-vertical"></ion-icon>
-    </ion-button>
-
-    <div *ngIf="menuOpen" class="options-menu">
-      <button type="button" (click)="removeCourse()">Slet forløb</button>
     </div>
   </ion-card-header>
 

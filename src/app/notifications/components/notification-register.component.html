@@ -1,15 +1,24 @@
+<p class="notification-status">{{ statusText }}</p>
+
+<p *ngIf="subscribed" class="notification-note">
+  Notifikationer kan ændres i telefonens indstillinger.
+</p>
+
+<p *ngIf="message" class="notification-feedback" [class.success]="subscribed">
+  {{ message }}
+</p>
+
 <ion-note *ngIf="!isNative" color="medium">
   Push-notifikationer kan først registreres i Android/iOS-buildet.
 </ion-note>
 
 <ion-button
-  *ngIf="isNative"
+  *ngIf="!subscribed"
   expand="block"
   type="button"
-  [disabled]="loading || subscribed"
+  [disabled]="loading"
   (click)="register()"
 >
   <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
-  <ion-icon *ngIf="!loading" name="checkmark-circle-outline" slot="start"></ion-icon>
-  {{ subscribed ? 'Tilmeldt notifikationer' : 'Tilmeld notifikationer' }}
+  Aktivér notifikationer
 </ion-button>

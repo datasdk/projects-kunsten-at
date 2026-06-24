@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginComponent } from '../../components/login/login.component';
-import { IonicModule } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
 
+import { CommonModule } from '@angular/common';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'page-login',
@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
-    IonicModule,
+    ...IONIC_STANDALONE_IMPORTS,
     CommonModule,
     LoginComponent
   ]
@@ -19,6 +19,5 @@ import { CommonModule } from '@angular/common';
 export class LoginPage implements OnInit {
 
   ngOnInit() {}
-
 
 }

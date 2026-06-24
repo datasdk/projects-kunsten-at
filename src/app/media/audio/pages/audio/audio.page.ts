@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+
 import { AuthService } from '@/auth/services/auth.service';
 import { AudioListComponent } from '@/media/audio/components/list/audio-list.component';
 import { SoundPlaylist } from '../../interfaces/sound-playlist.interface';
 import { AudiobookService } from '../../services/audiobook.service';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-audio-page',
   standalone: true,
   templateUrl: './audio.page.html',
   styleUrls: ['./audio.page.scss'],
-  imports: [CommonModule, IonicModule, AudioListComponent]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS, AudioListComponent]
 })
 export class AudioPage implements OnInit {
   playlist: SoundPlaylist | null = null;
@@ -20,6 +21,7 @@ export class AudioPage implements OnInit {
   hasFullAccess = false;
   showAccessNotice = true;
   loggedIn = false;
+  private loadedOnce = false;
 
   constructor(
     private audiobook: AudiobookService,
@@ -28,6 +30,12 @@ export class AudioPage implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.load();
+  }
+
+  async ionViewWillEnter(): Promise<void> {
+    if (this.loadedOnce) {
+      await this.load();
+    }
   }
 
   get accessNoticeText(): string {
@@ -50,8 +58,11 @@ export class AudioPage implements OnInit {
   private async load(): Promise<void> {
     this.loading = true;
     this.error = null;
+    this.playlist = null;
+    this.hasFullAccess = false;
 
     try {
+      this.loadedOnce = true;
       this.loggedIn = await this.auth.isLoggedin();
       if (this.loggedIn) {
         await this.auth.refreshUser();

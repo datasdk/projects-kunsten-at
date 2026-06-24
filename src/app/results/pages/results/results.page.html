@@ -1,10 +1,10 @@
 <ion-content class="ion-padding results-content">
-  <section class="page-heading">
+  <section class="page-heading animate__animated animate__fadeInUp app-animate">
     <p>Min udvikling</p>
     <h1>Resultater</h1>
   </section>
 
-  <section *ngIf="!rows.length" class="empty-state">
+  <section *ngIf="!rows.length" class="empty-state animate__animated animate__fadeInUp app-animate app-animate-delay">
     <ion-icon name="stats-chart-outline"></ion-icon>
     <h2>Se din udvikling</h2>
     <p>
@@ -16,7 +16,7 @@
   -->  
   </section>
 
-  <section *ngIf="rows.length" class="chart-panel">
+  <section *ngIf="rows.length" class="chart-panel animate__animated animate__fadeInUp app-animate app-animate-delay">
     <div class="chart-canvas">
       <canvas #resultsChart></canvas>
     </div>

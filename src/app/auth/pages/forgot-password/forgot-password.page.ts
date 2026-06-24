@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ForgotPasswordComponent } from '../../components/forgot-password/forgot-password.component';
-import { IonicModule } from '@ionic/angular';
-
-
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-forgot-password',
@@ -15,10 +13,9 @@ import { IonicModule } from '@ionic/angular';
     CommonModule, 
     FormsModule,
     ForgotPasswordComponent,
-    IonicModule
+    ...IONIC_STANDALONE_IMPORTS
   ]
 })
-
 
 export class ForgotPasswordPage implements OnInit {
 

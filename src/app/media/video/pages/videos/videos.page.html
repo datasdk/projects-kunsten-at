@@ -1,4 +1,4 @@
-<ion-content fullscreen class="videos-content">
+<ion-content fullscreen class="videos-content" [scrollY]="false">
   <app-video-playlist
     [videos]="videos"
     [current]="current"
@@ -9,9 +9,13 @@
     [showLoginLink]="showLoginLink"
     [canStartCourse]="canStartCourse"
     [canFinishTask]="canFinishTask"
+    [showTestFinish]="showTestFinish"
     (currentChange)="setCurrent($event)"
     (closeAccessNotice)="showAccessNotice = false"
+    (closeRequested)="close()"
+    (loginRequested)="showLoginRequiredAlert()"
     (startCourseRequested)="startCourse()"
     (finishTaskRequested)="finishTask()"
+    (testFinishRequested)="triggerTestFinish()"
   ></app-video-playlist>
 </ion-content>

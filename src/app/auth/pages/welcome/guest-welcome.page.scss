@@ -2,19 +2,27 @@
   --background: #ffffff;
 }
 
+.welcome-content::part(scroll) {
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
 .welcome-hero {
   display: grid;
   align-content: center;
   justify-items: center;
-  min-height: 100%;
-  padding: 38px 22px;
+  width: 100%;
+  min-height: 100svh;
+  padding: calc(34px + var(--ion-safe-area-top, 0px)) 22px calc(34px + var(--ion-safe-area-bottom, 0px));
   text-align: center;
 }
 
 .welcome-hero img {
-  width: min(56vw, 220px);
+  width: min(52vw, 210px);
   height: auto;
-  margin-bottom: 20px;
+  margin-bottom: clamp(18px, 4svh, 28px);
   border-radius: 8px;
 }
 
@@ -28,27 +36,49 @@
 
 .welcome-hero p {
   max-width: 31rem;
-  margin: 0 0 22px;
+  margin: 0 0 clamp(20px, 4svh, 28px);
   color: #58635f;
   font-size: 1.02rem;
   line-height: 1.55;
+}
+
+.welcome-actions {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: min(100%, 320px);
 }
 
 .welcome-hero ion-button {
   --background: var(--app-icon-color);
   --background-hover: #4567a6;
   --border-radius: 8px;
-  min-width: 176px;
+  width: min(100%, 224px);
   min-height: 48px;
+  margin: 0;
   font-weight: 900;
 }
 
 .guest-link {
-  margin-top: 12px;
-  padding: 8px 10px;
+  min-height: 44px;
+  padding: 8px 12px;
   border: 0;
   background: transparent;
   color: var(--app-icon-color);
   font: inherit;
   font-weight: 900;
+}
+
+@media (max-height: 650px) {
+  .welcome-hero {
+    min-height: 100%;
+  }
+
+  .welcome-hero img {
+    width: min(38vw, 148px);
+  }
+
+  .welcome-hero h1 {
+    font-size: clamp(1.75rem, 7vw, 2.35rem);
+  }
 }

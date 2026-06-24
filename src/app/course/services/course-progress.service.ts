@@ -99,16 +99,24 @@ export class CourseProgressService {
 
   async clearCurrentCourse(): Promise<void> {
     await this.storage.remove('statistics_start');
+    await this.storage.remove('statistics_stop');
     await this.storage.remove('has-active-task');
     await this.storage.removeByPrefix('task-');
+    await this.storage.removeByPrefix('statistics_');
   }
 
   isTaskPeriodComplete(task: ActiveTask): boolean {
+    const days = Math.ceil(Number(task.days));
     const start = new Date(task.startdate.replace(' ', 'T'));
-    const now = new Date();
-    const diff = now.getTime() - start.getTime();
-    const dayMs = 24 * 60 * 60 * 1000;
-    return Math.floor(diff / dayMs) >= task.days;
+
+    if (!Number.isFinite(days) || days <= 0 || Number.isNaN(start.getTime())) {
+      return false;
+    }
+
+    const dueDate = new Date(start);
+    dueDate.setDate(start.getDate() + days);
+
+    return new Date().getTime() >= dueDate.getTime();
   }
 
   today(): string {

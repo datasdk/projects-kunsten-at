@@ -10,7 +10,7 @@
     </ion-checkbox>
   </ion-item>
 
-  <ion-button *ngIf="!activeTask && !hasActiveTask" size="small" type="button" (click)="startCourse()">
+  <ion-button *ngIf="canStartCourse" size="small" type="button" (click)="startCourse()">
     Start forløb
   </ion-button>
 </ng-container>

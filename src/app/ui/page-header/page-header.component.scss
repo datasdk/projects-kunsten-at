@@ -3,17 +3,67 @@
 }
 
 ion-toolbar {
+  --header-side-width: 92px;
   --background: #ffffff;
   --color: var(--app-heading);
   --border-width: 0;
+  position: relative;
 }
 
 ion-menu-button {
   --color: var(--app-icon-color);
 }
 
-ion-title {
+ion-buttons {
+  position: relative;
+  z-index: 2;
+}
+
+.header-side {
+  width: var(--header-side-width);
+  min-width: var(--header-side-width);
+}
+
+.header-side-end {
+  justify-content: flex-end;
+}
+
+.header-back-button {
+  --color: var(--app-icon-color);
+  --padding-start: 8px;
+  --padding-end: 8px;
+  margin: 0;
+  font-weight: 800;
+  text-transform: none;
+}
+
+.header-title {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% - var(--header-side-width) - var(--header-side-width));
   color: var(--app-heading);
   font-size: 1rem;
   font-weight: 800;
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.title-button {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: auto;
 }

@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+
 import { RegisterComponent } from '../../components/register/register.component';
-
-
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-register',
@@ -14,7 +13,7 @@ import { RegisterComponent } from '../../components/register/register.component'
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    ...IONIC_STANDALONE_IMPORTS,
     RegisterComponent
   ]
 })

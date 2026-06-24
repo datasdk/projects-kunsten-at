@@ -1,20 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, IonicModule } from '@ionic/angular';
+import { AlertController } from '@ionic/angular/standalone';
+
 import { AuthService } from '@/auth/services/auth.service';
 import { CourseProgressService } from '@/course/services/course-progress.service';
 import { ActiveTask } from '@/course/interfaces/active-task.interface';
 import { VideoPlaylistComponent } from '@/media/video/components/playlist/video-playlist.component';
+import { environment } from '@environments/environment';
+import { ToastService } from '@services/toast.service';
 import { VideoService } from '../../services/video.service';
 import { VideoItem } from '../../interfaces/video-item.interface';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-videos-page',
   standalone: true,
   templateUrl: './videos.page.html',
   styleUrls: ['./videos.page.scss'],
-  imports: [CommonModule, IonicModule, VideoPlaylistComponent]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS, VideoPlaylistComponent]
 })
 export class VideosPage implements OnInit, OnDestroy {
   videos: VideoItem[] = [];
@@ -28,6 +32,7 @@ export class VideosPage implements OnInit, OnDestroy {
   activeTask: ActiveTask | null = null;
   hasActiveTask = false;
   checked = false;
+  showTestFinish = false;
   private routeSubscription?: { unsubscribe: () => void };
 
   constructor(
@@ -36,6 +41,7 @@ export class VideosPage implements OnInit, OnDestroy {
     private videoService: VideoService,
     private auth: AuthService,
     private progress: CourseProgressService,
+    private toast: ToastService,
     private alertController: AlertController
   ) {}
 
@@ -43,6 +49,7 @@ export class VideosPage implements OnInit, OnDestroy {
     this.routeSubscription = this.route.queryParamMap.subscribe((params) => {
       this.categoryId = params.get('category_id');
       this.current = Number(params.get('index') ?? 0);
+      this.showTestFinish = !environment.production && params.get('debug_finish') === '1';
       void this.load();
     });
   }
@@ -68,7 +75,7 @@ export class VideosPage implements OnInit, OnDestroy {
   }
 
   get canStartCourse(): boolean {
-    return !!this.currentVideo && !this.isIntro(this.currentVideo) && !this.activeTask && !this.hasActiveTask;
+    return this.loggedIn && !!this.currentVideo && !this.isIntro(this.currentVideo) && !this.activeTask && !this.hasActiveTask;
   }
 
   get canFinishTask(): boolean {
@@ -104,13 +111,43 @@ export class VideosPage implements OnInit, OnDestroy {
     await this.refreshTaskState();
   }
 
-  startCourse(): void {
-    void this.router.navigate(['/course/start'], {
+  async startCourse(): Promise<void> {
+    if (!this.loggedIn) {
+      await this.showLoginRequiredAlert();
+      return;
+    }
+
+    await this.router.navigate(['/course/start'], {
       queryParams: {
         category_id: this.categoryId,
         index: this.current
       }
     });
+  }
+
+  async showLoginRequiredAlert(): Promise<void> {
+    await this.auth.setLoginRedirect(this.router.url);
+
+    const alert = await this.alertController.create({
+      header: 'Log ind kræves',
+      message: 'Du er ikke logget ind. Derfor er kun én video tilgængelig. Log ind for at få fuld adgang.',
+      buttons: [
+        { text: 'Annuller', role: 'cancel' },
+        {
+          text: 'Log ind',
+          role: 'confirm',
+          handler: () => {
+            void this.router.navigateByUrl('/auth/login');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  close(): void {
+    void this.router.navigateByUrl('/home/dashboard');
   }
 
   async finishTask(): Promise<void> {
@@ -123,17 +160,31 @@ export class VideosPage implements OnInit, OnDestroy {
 
     await this.progress.setTaskDone(this.categoryId, this.current, true);
     this.checked = true;
-    await this.showFinishedAlert(task);
+    await this.toast.success('Godt arbejde\nDu har fuldført dagens opgave.\nKom tilbage i morgen for næste skridt i forløbet.');
+
+    if (this.progress.isTaskPeriodComplete(task)) {
+      await this.router.navigate(['/course/stop'], {
+        queryParams: {
+          category_id: this.categoryId,
+          days: task.days
+        }
+      });
+      return;
+    }
+
+    await this.refreshTaskState();
   }
 
-  private async showFinishedAlert(task: ActiveTask): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Tillykke!',
-      message: `Du har markeret dagens øvelse som færdig. Fortsæt i ${task.days} dage for at gennemføre forløbet.`,
-      buttons: [{ text: 'OK', role: 'confirm' }]
-    });
+  async triggerTestFinish(): Promise<void> {
+    const days = this.activeTask?.days ?? 1;
+    await this.toast.success('Godt arbejde\nDu har fuldført dagens opgave.\nKom tilbage i morgen for næste skridt i forløbet.');
 
-    await alert.present();
+    await this.router.navigate(['/course/stop'], {
+      queryParams: {
+        category_id: this.categoryId,
+        days
+      }
+    });
   }
 
   private async refreshTaskState(): Promise<void> {

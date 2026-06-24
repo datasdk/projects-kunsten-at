@@ -3,20 +3,27 @@
    
   </section>
 
-  <app-course-wheel></app-course-wheel>
-
-  <div class="content-stack">
-    <aside *ngIf="showDashboardProNotice" class="access-notice">
-      <p>Opgrader til PRO for at få adgang til alle videoer og lydbøger.</p>
-      <ion-button fill="clear" type="button" aria-label="Luk besked" (click)="closeDashboardProNotice()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
+  <div class="dashboard-banners animate__animated animate__fadeInUp app-animate">
+    <aside *ngIf="!loggedIn" class="access-banner">
+      <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+      <p>You are not logged in, therefore you have limited access to the app.</p>
     </aside>
 
+    <aside *ngIf="loggedIn && !isPro" class="access-banner pro-banner">
+      <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+      <p>
+        You are not a Pro user.
+        <a routerLink="/pro">Read more about Pro access</a>
+      </p>
+    </aside>
+  </div>
+
+  <app-course-wheel></app-course-wheel>
+
+  <div class="content-stack animate__animated animate__fadeInUp app-animate app-animate-delay">
     <app-my-course-card
       *ngIf="auth.token() && course"
       [course]="course"
-      (removeCourseRequested)="removeCourse()"
     ></app-my-course-card>
     <app-box-breathing></app-box-breathing>
   </div>

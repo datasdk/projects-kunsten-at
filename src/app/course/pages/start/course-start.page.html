@@ -5,7 +5,12 @@
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Start forløb</ion-title>
+    <ion-title>{{ stepTitle }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" type="button" aria-label="Luk" (click)="close()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -14,7 +19,7 @@
     <ion-progress-bar [value]="(step + 1) / (maxStep + 1)"></ion-progress-bar>
 
     <ng-container [ngSwitch]="step">
-      <section *ngSwitchCase="0" class="explain-step">
+      <section *ngSwitchCase="0" class="step-body explain-step">
         <h1>Start forløb</h1>
         <p>
           Du er ved at starte forløbet <strong>{{ courseName }}</strong>. Før du går i gang,
@@ -27,21 +32,19 @@
         </p>
       </section>
 
-      <section *ngSwitchCase="1">
-        <h1>Tilstands-test</h1>
-        <p>Vælg det antal stjerner, der passer bedst til, hvordan du har det lige nu.</p>
-
+      <section *ngSwitchCase="1" class="step-body">
         <div *ngFor="let question of questions" class="question">
           <h2>{{ question.text }}</h2>
           <div class="scale-labels">
             <span>{{ question.left }}</span>
             <span>{{ question.right }}</span>
           </div>
-          <div class="rating">
+          <div class="rating" [style.--rating-color]="ratingColor(question.value)">
             <ion-button
               *ngFor="let value of ratingValues"
               fill="clear"
               type="button"
+              [class.selected]="question.value >= value"
               (click)="setRating(question, value)"
               [attr.aria-label]="value + ' stjerner'"
             >
@@ -51,39 +54,41 @@
         </div>
       </section>
 
-      <section *ngSwitchCase="2">
+      <section *ngSwitchCase="2" class="step-body">
         <h1>Vælg varighed</h1>
         <p>Vælg hvor mange dage du vil gennemføre øvelsen.</p>
 
         <ion-radio-group [(ngModel)]="days" class="duration-options">
           <ion-item *ngFor="let option of daysOptions" lines="none" class="duration-option">
-            <ion-radio slot="start" [value]="option" aria-label="{{ option }} dage"></ion-radio>
+            <ion-radio slot="start" [value]="option" [attr.aria-label]="option + ' dage'"></ion-radio>
             <ion-label>{{ option }} dage</ion-label>
           </ion-item>
         </ion-radio-group>
       </section>
 
-      <section *ngSwitchCase="3">
-        <h1>Tilmeld notifikationer</h1>
+      <section *ngSwitchCase="3" class="step-body">
+        <h1>Notifikationer</h1>
         <p>Få en påmindelse, så forløbet bliver lettere at holde fast i dag for dag.</p>
-        <app-notification-register></app-notification-register>
+        <app-notification-register (registered)="handleNotificationRegistered()"></app-notification-register>
       </section>
 
-      <section *ngSwitchCase="4" class="done-step">
+      <section *ngSwitchCase="4" class="step-body done-step">
         <ion-icon name="checkmark-circle-outline"></ion-icon>
         <h1>Du er klar</h1>
         <p>Start forløbet og vend tilbage dagligt i den valgte periode.</p>
       </section>
     </ng-container>
 
+  </section>
+</ion-content>
+
+<ion-footer class="ion-no-border course-footer">
+  <ion-toolbar>
     <div class="step-actions">
-      <ion-button fill="clear" type="button" [disabled]="loading" (click)="close()">
-        Luk
-      </ion-button>
-      <ion-button class="submit-button" type="button" [disabled]="loading" (click)="next()">
+      <ion-button class="submit-button" expand="block" type="button" [disabled]="loading" (click)="next()">
         <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
         {{ step < maxStep ? 'Fortsæt' : 'Start forløb' }}
       </ion-button>
     </div>
-  </section>
-</ion-content>
+  </ion-toolbar>
+</ion-footer>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular/standalone';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,7 @@ export class AlertService {
     });
 
     await alert.present();
+    await alert.onDidDismiss();
   }
 
   async confirm(header: string, message: string, confirmText = 'Ja', cancelText = 'Nej'): Promise<boolean> {

@@ -15,6 +15,15 @@ import { CourseStopPage } from './course/pages/stop/course-stop.page';
 import { CourseSuccessPage } from './course/pages/success/course-success.page';
 import { ResultsPage } from './results/pages/results/results.page';
 import { TermsPage } from './terms/pages/terms/terms.page';
+import { SettingsMenuPage } from './settings/pages/menu/settings-menu.page';
+import { SettingsProfilePage } from './settings/pages/profile/settings-profile.page';
+import { SettingsPasswordPage } from './settings/pages/password/settings-password.page';
+import { SettingsMembershipPage } from './settings/pages/membership/settings-membership.page';
+import { SettingsNotificationsPage } from './settings/pages/notifications/settings-notifications.page';
+import { SettingsCoursePage } from './settings/pages/course/settings-course.page';
+import { SettingsDeleteAccountPage } from './settings/pages/delete-account/settings-delete-account.page';
+import { HelpPage } from './help/pages/help/help.page';
+import { ProInfoPage } from './pro/pages/info/pro-info.page';
 
 export const routes: Routes = [
   {
@@ -73,6 +82,10 @@ export const routes: Routes = [
     component: CourseSuccessPage
   },
   {
+    path: 'pro',
+    component: ProInfoPage
+  },
+  {
     path: 'course/statistics',
     redirectTo: 'home/results',
     pathMatch: 'full'
@@ -106,6 +119,53 @@ export const routes: Routes = [
       {
         path: 'terms',
         component: TermsPage
+      },
+      {
+        path: 'help',
+        component: HelpPage
+      },
+      {
+        path: 'settings',
+        children: [
+          {
+            path: '',
+            component: SettingsMenuPage
+          },
+          {
+            path: 'profile',
+            component: SettingsProfilePage
+          },
+          {
+            path: 'password',
+            component: SettingsPasswordPage
+          },
+          {
+            path: 'membership',
+            component: SettingsMembershipPage
+          },
+          {
+            path: 'notifications',
+            component: SettingsNotificationsPage
+          },
+          {
+            path: 'course',
+            component: SettingsCoursePage
+          },
+          {
+            path: 'reset-course',
+            redirectTo: 'course',
+            pathMatch: 'full'
+          },
+          {
+            path: 'delete-account',
+            component: SettingsDeleteAccountPage
+          },
+          {
+            path: 'delete-user',
+            redirectTo: 'delete-account',
+            pathMatch: 'full'
+          }
+        ]
       }
     ]
   },
@@ -122,6 +182,56 @@ export const routes: Routes = [
   {
     path: 'terms',
     redirectTo: 'home/terms',
+    pathMatch: 'full'
+  },
+  {
+    path: 'help',
+    redirectTo: 'home/help',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings',
+    redirectTo: 'home/settings',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings/profile',
+    redirectTo: 'home/settings/profile',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings/password',
+    redirectTo: 'home/settings/password',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings/membership',
+    redirectTo: 'home/settings/membership',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings/notifications',
+    redirectTo: 'home/settings/notifications',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings/course',
+    redirectTo: 'home/settings/course',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings/delete-account',
+    redirectTo: 'home/settings/delete-account',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings/reset-course',
+    redirectTo: 'home/settings/course',
+    pathMatch: 'full'
+  },
+  {
+    path: 'settings/delete-user',
+    redirectTo: 'home/settings/delete-account',
     pathMatch: 'full'
   },
   {
@@ -162,6 +272,11 @@ export const routes: Routes = [
   {
     path: 'tabs/terms',
     redirectTo: 'home/terms',
+    pathMatch: 'full'
+  },
+  {
+    path: 'tabs/settings',
+    redirectTo: 'home/settings',
     pathMatch: 'full'
   },
   {

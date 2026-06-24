@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+
 import { filter, Subscription } from 'rxjs';
 import { BreathingState } from '../../interfaces/breathing-state.interface';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-box-breathing',
   standalone: true,
   templateUrl: './box-breathing.component.html',
   styleUrls: ['./box-breathing.component.scss'],
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS]
 })
 export class BoxBreathingComponent implements OnDestroy {
   progress = 0;

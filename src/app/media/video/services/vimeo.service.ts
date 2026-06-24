@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class VimeoService {
-  buildEmbedUrl(url: string): string {
+  buildEmbedUrl(url: string, options: { autoplay?: boolean; muted?: boolean } = {}): string {
     const parsed = new URL(url);
 
     if (parsed.hostname.includes('vimeo.com') && parsed.hostname !== 'player.vimeo.com') {
@@ -16,11 +16,11 @@ export class VimeoService {
       }
     }
 
-    parsed.searchParams.set('autoplay', '0');
+    parsed.searchParams.set('autoplay', options.autoplay ? '1' : '0');
     parsed.searchParams.set('playsinline', '1');
     parsed.searchParams.set('controls', '0');
     parsed.searchParams.set('background', '0');
-    parsed.searchParams.set('muted', '0');
+    parsed.searchParams.set('muted', options.muted ? '1' : '0');
     parsed.searchParams.set('title', '0');
     parsed.searchParams.set('byline', '0');
     parsed.searchParams.set('portrait', '0');

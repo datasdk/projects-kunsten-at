@@ -1,0 +1,81 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.settings-content {
+  --background: #ffffff;
+}
+
+.settings-shell {
+  display: grid;
+  gap: 18px;
+  width: min(100%, 680px);
+  margin: 0 auto;
+  padding: calc(34px + var(--ion-safe-area-top, 0px)) 22px calc(34px + var(--ion-safe-area-bottom, 0px));
+  animation: settings-page-enter 280ms ease-out both;
+}
+
+@keyframes settings-page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.settings-form {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-form ion-item {
+  --min-height: 52px;
+  --background: #f7f8fa;
+  --border-radius: 8px;
+  --padding-start: 14px;
+  --inner-padding-end: 14px;
+  --highlight-color-focused: var(--app-icon-color);
+  border: 1px solid rgba(31, 41, 51, 0.08);
+  border-radius: 8px;
+}
+
+.settings-form ion-input {
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --color: var(--app-text);
+  --placeholder-color: #7a8580;
+  --placeholder-opacity: 1;
+  min-height: 50px;
+}
+
+.settings-form ion-button {
+  margin: 0;
+  min-height: 46px;
+  --border-radius: 8px;
+}
+
+.section-block {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.section-block p {
+  margin: 0;
+  color: #58635f;
+  line-height: 1.45;
+}
+
+.error-text {
+  margin: -6px 2px 0;
+  color: var(--ion-color-danger);
+  font-size: 0.86rem;
+}

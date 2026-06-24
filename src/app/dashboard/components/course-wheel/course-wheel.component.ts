@@ -2,15 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+
 import { WheelCourse } from '../../interfaces/wheel-course.interface';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-course-wheel',
   standalone: true,
   templateUrl: './course-wheel.component.html',
   styleUrls: ['./course-wheel.component.scss'],
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS]
 })
 export class CourseWheelComponent implements OnDestroy {
   readonly courses: WheelCourse[] = [
@@ -34,11 +35,9 @@ export class CourseWheelComponent implements OnDestroy {
   private lastTickIndex = this.indexAtPointer(this.rotation);
   private blinkTimer?: number;
   private snapTimer?: number;
-  private readonly click = new Audio('https://media.kunsten-at.dk/lyd/app/click.mp3');
+  private openTimer?: number;
 
-  constructor(private router: Router) {
-    this.click.preload = 'auto';
-  }
+  constructor(private router: Router) {}
 
   onPointerDown(event: PointerEvent): void {
     if (this.snapping) {
@@ -93,10 +92,9 @@ export class CourseWheelComponent implements OnDestroy {
     if (this.moved) {
       this.snapToIndex(index);
       this.blinkSelection(index);
-      event.preventDefault();
-      return;
     }
 
+    this.vibrateRelease();
     this.blinkAndOpen(index);
     event.preventDefault();
   }
@@ -120,6 +118,11 @@ export class CourseWheelComponent implements OnDestroy {
       window.clearTimeout(this.snapTimer);
       this.snapTimer = undefined;
     }
+
+    if (this.openTimer) {
+      window.clearTimeout(this.openTimer);
+      this.openTimer = undefined;
+    }
   }
 
   ngOnDestroy(): void {
@@ -129,8 +132,16 @@ export class CourseWheelComponent implements OnDestroy {
   private blinkAndOpen(index: number): void {
     this.selectedIndex = index;
     this.snapping = true;
-    this.playClick();
-    this.openCourse(index);
+    this.startBlink();
+
+    if (this.openTimer) {
+      window.clearTimeout(this.openTimer);
+    }
+
+    this.openTimer = window.setTimeout(() => {
+      this.openTimer = undefined;
+      this.openCourse(index);
+    }, 900);
   }
 
   private openCourse(index: number): void {
@@ -193,11 +204,6 @@ export class CourseWheelComponent implements OnDestroy {
     this.vibrateTick();
   }
 
-  private playClick(): void {
-    this.click.currentTime = 0;
-    void this.click.play().catch(() => undefined);
-  }
-
   private indexAtPointer(rotation: number): number {
     const normalized = ((rotation % 360) + 360) % 360;
     const topAngleOnImage = (360 - normalized) % 360;
@@ -227,7 +233,16 @@ export class CourseWheelComponent implements OnDestroy {
   }
 
   private vibrateTick(): void {
-    navigator.vibrate?.(1);
-    void Haptics.impact({ style: ImpactStyle.Light }).catch(() => undefined);
+    navigator.vibrate?.([8, 24, 8]);
+    void Haptics.impact({ style: ImpactStyle.Light })
+      .then(() => window.setTimeout(() => {
+        void Haptics.impact({ style: ImpactStyle.Light }).catch(() => undefined);
+      }, 36))
+      .catch(() => undefined);
+  }
+
+  private vibrateRelease(): void {
+    navigator.vibrate?.(32);
+    void Haptics.impact({ style: ImpactStyle.Medium }).catch(() => undefined);
   }
 }

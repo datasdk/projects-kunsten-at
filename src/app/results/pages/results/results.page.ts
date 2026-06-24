@@ -1,18 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+
 import Chart from 'chart.js/auto';
 import { CourseQuestion } from '@/course/interfaces/course-question.interface';
 import { CourseSnapshot } from '@/course/interfaces/course-snapshot.interface';
 import { CourseProgressService } from '@/course/services/course-progress.service';
 import { ResultsRow } from '../../interfaces/results-row.interface';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-results-page',
   standalone: true,
   templateUrl: './results.page.html',
   styleUrls: ['./results.page.scss'],
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS]
 })
 export class ResultsPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('resultsChart') resultsChart?: ElementRef<HTMLCanvasElement>;
@@ -26,10 +27,11 @@ export class ResultsPage implements OnInit, AfterViewInit, OnDestroy {
   constructor(private progress: CourseProgressService) {}
 
   async ngOnInit(): Promise<void> {
-    this.start = await this.progress.getStart();
-    this.stop = await this.progress.getStop();
-    this.rows = this.createRows(this.start?.statistics.items ?? [], this.stop?.statistics.items ?? []);
-    this.scheduleChartRender();
+    await this.loadSnapshots();
+  }
+
+  async ionViewWillEnter(): Promise<void> {
+    await this.loadSnapshots();
   }
 
   ngAfterViewInit(): void {
@@ -58,22 +60,33 @@ export class ResultsPage implements OnInit, AfterViewInit, OnDestroy {
 
   developmentLabel(delta: number): string {
     if (delta >= 4) {
-      return 'Vildeste udvikling!';
+      return 'Markant positiv udvikling';
     }
 
     if (delta >= 3) {
-      return 'Fantastisk udvikling';
+      return 'Betydelig positiv udvikling';
     }
 
     if (delta >= 2) {
-      return 'Stor udvikling';
+      return 'Tydelig positiv udvikling';
     }
 
-    return 'God udvikling';
+    if (delta >= 1) {
+      return 'Positiv udvikling';
+    }
+
+    return 'Stabil måling';
   }
 
   private scheduleChartRender(): void {
     window.setTimeout(() => this.renderChart(), 0);
+  }
+
+  private async loadSnapshots(): Promise<void> {
+    this.start = await this.progress.getStart();
+    this.stop = await this.progress.getStop();
+    this.rows = this.createRows(this.start?.statistics.items ?? [], this.stop?.statistics.items ?? []);
+    this.scheduleChartRender();
   }
 
   private renderChart(): void {

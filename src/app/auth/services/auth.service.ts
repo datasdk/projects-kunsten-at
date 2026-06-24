@@ -9,22 +9,25 @@ import { RegisterData } from '../interfaces/register-data.interface';
 
 export type { AuthUser } from '../interfaces/auth-user.interface';
 
+type UserResource = AuthUser & {
+  attributes?: AuthUser;
+  data?: unknown;
+  user?: unknown;
+};
 
 @Injectable({
   providedIn: 'root',
 })
 
-
 export class AuthService {
   private readonly planIdKey = 'plan_id';
-
+  private readonly loginRedirectKey = 'login_redirect_url';
 
   token = signal<string | null>(null);
 
   user = signal<AuthUser | null>(null);
 
   guestMode = signal<boolean>(localStorage.getItem('guest_mode') === '1');
-
 
   constructor(private http: HttpClient) {
 
@@ -34,15 +37,11 @@ export class AuthService {
 
   }
 
-
   async init(): Promise<void> {
-
 
     if (await this.isLoggedin()) {
 
-
       const token = await this.getToken();
-
 
       if (token) {
 
@@ -58,31 +57,25 @@ export class AuthService {
 
   }
 
-
   getBaseApiUrl(): string {
 
     return `${environment.domain.replace(/\/+$/, '')}/api`;
 
   }
 
-
   async login(email: string, password: string, rememberMe: boolean = false): Promise<{ token?: string; user?: AuthUser }> {
-
 
     const url = this.getBaseApiUrl() + "/auth/login"
 
-
     try {
 
-
-      const response = await firstValueFrom(this.http.post<{ token?: string; user?: AuthUser }>(url, {
+      const response = await firstValueFrom(this.http.post<{ token?: string; user?: AuthUser; data?: AuthUser }>(url, {
         email,
         password,
         rememberMe,
         include: 'memberships'
       }));
-      const user = this.withPlanId(response.user ?? null);
-
+      const user = this.withPlanId(this.normalizeUser(response.user ?? response.data));
 
       if (response.token) {
 
@@ -90,7 +83,6 @@ export class AuthService {
 
         await Preferences.set({ key: 'auth_token', value: response.token });
         localStorage.removeItem('guest_mode');
-
 
         this.token.set(response.token);
         this.setAuthToken(response.token);
@@ -100,9 +92,7 @@ export class AuthService {
 
       }
 
-
       return { ...response, user: user ?? response.user };
-
 
     } catch (err) {
 
@@ -113,7 +103,6 @@ export class AuthService {
     }
 
   }
-
 
   async register(data: RegisterData): Promise<unknown> {
 
@@ -131,7 +120,6 @@ export class AuthService {
 
     }
   }
-
 
   async forgotPassword(email: string, returnUrl?: string): Promise<unknown> {
 
@@ -158,38 +146,28 @@ export class AuthService {
 
   }
 
-
   async logout(): Promise<boolean> {
 
-
     const url = this.getBaseApiUrl() + "/auth/logout"
-
 
     try {
       await firstValueFrom(this.http.post(url, { }));
     } catch (err) {
       console.warn('Remote logout failed, clearing local session', err);
     } finally {
-      await Preferences.remove({ key: 'auth_user' });
-
-      await Preferences.remove({ key: 'auth_token'});
-      await Preferences.remove({ key: this.planIdKey });
-      this.clearCookie(this.planIdKey);
-      localStorage.removeItem('guest_mode');
+      await this.clearLocalSession();
 
       this.token.set(null);
           
       this.user.set(null);
       this.guestMode.set(false);
-
+      Orion.withoutToken();
 
       return true
 
     }
 
   }
-
-
 
   async getToken(): Promise<string | null> {
 
@@ -203,7 +181,6 @@ export class AuthService {
 
   }
 
-
   async getUser(): Promise<AuthUser | null> {
     
 
@@ -213,7 +190,7 @@ export class AuthService {
 
     if (!value) return null;
 
-    const parsed = this.withPlanId(JSON.parse(value));
+    const parsed = this.withPlanId(this.normalizeUser(JSON.parse(value)));
 
     this.user.set(parsed)
     await this.persistPlanId(parsed?.plan_id ?? null);
@@ -222,17 +199,19 @@ export class AuthService {
 
   }
 
-
   async refreshUser(): Promise<AuthUser | null> {
 
     const token = await this.getToken();
 
     const url = this.getBaseApiUrl() + "/user/me";
 
+    if (!token) {
+      return null;
+    }
 
     try {
 
-      const response = await firstValueFrom(this.http.get<{ data?: AuthUser; user?: AuthUser }>(url, {
+      const response = await firstValueFrom(this.http.get<unknown>(url, {
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -241,7 +220,7 @@ export class AuthService {
         }
       }));
 
-      const user = this.withPlanId(response.data ?? response.user ?? null);
+      const user = this.withPlanId(this.normalizeUser(response));
 
       this.user.set(user);
 
@@ -253,7 +232,6 @@ export class AuthService {
 
       return user;
 
-
     } catch (err) {
 
       console.error(err);
@@ -263,7 +241,6 @@ export class AuthService {
     }
 
   }
-
 
   /**
    * Sætter Bearer token til alle fremtidige requests
@@ -275,6 +252,18 @@ export class AuthService {
 
   }
 
+  async storeUser(user: AuthUser | null): Promise<void> {
+    const normalized = this.withPlanId(this.normalizeUser(user));
+
+    this.user.set(normalized);
+
+    if (normalized) {
+      await this.persistUser(normalized);
+      return;
+    }
+
+    await this.persistPlanId(null);
+  }
 
   async isLoggedin(): Promise<boolean> {
 
@@ -286,6 +275,30 @@ export class AuthService {
   continueAsGuest(): void {
     localStorage.setItem('guest_mode', '1');
     this.guestMode.set(true);
+  }
+
+  async setLoginRedirect(url: string | null | undefined): Promise<void> {
+    const normalized = this.normalizeRedirectUrl(url);
+
+    if (!normalized) {
+      await Preferences.remove({ key: this.loginRedirectKey });
+      localStorage.removeItem(this.loginRedirectKey);
+      return;
+    }
+
+    await Preferences.set({ key: this.loginRedirectKey, value: normalized });
+    localStorage.setItem(this.loginRedirectKey, normalized);
+  }
+
+  async consumeLoginRedirect(fallback = '/home/help'): Promise<string> {
+    const stored = (await Preferences.get({ key: this.loginRedirectKey })).value
+      ?? localStorage.getItem(this.loginRedirectKey);
+    const normalized = this.normalizeRedirectUrl(stored) ?? fallback;
+
+    await Preferences.remove({ key: this.loginRedirectKey });
+    localStorage.removeItem(this.loginRedirectKey);
+
+    return normalized;
   }
 
   hasGuestAccess(): boolean {
@@ -301,6 +314,28 @@ export class AuthService {
     return Number(user?.plan_id) === planId
       || !!user?.memberships?.some((membership) => Number(membership.plan_id) === planId);
 
+  }
+
+  normalizeUser(source: unknown): AuthUser | null {
+    if (!source || typeof source !== 'object') {
+      return null;
+    }
+
+    const resource = source as UserResource;
+
+    if (resource.data || resource.user) {
+      return this.normalizeUser(resource.data ?? resource.user);
+    }
+
+    if (resource.attributes && typeof resource.attributes === 'object') {
+      return {
+        ...resource.attributes,
+        id: resource.id ?? resource.attributes.id,
+        memberships: resource.memberships ?? resource.attributes.memberships
+      };
+    }
+
+    return resource;
   }
 
   private withPlanId(user: AuthUser | null): AuthUser | null {
@@ -319,8 +354,58 @@ export class AuthService {
   }
 
   private async persistUser(user: AuthUser | null): Promise<void> {
+    if (!user) {
+      await Preferences.remove({ key: 'auth_user' });
+      await this.persistPlanId(null);
+      return;
+    }
+
     await Preferences.set({ key: 'auth_user', value: JSON.stringify(user) });
     await this.persistPlanId(user?.plan_id ?? null);
+  }
+
+  private async clearLocalSession(): Promise<void> {
+    await Preferences.remove({ key: 'auth_user' });
+    await Preferences.remove({ key: 'auth_token' });
+    await Preferences.remove({ key: this.planIdKey });
+
+    this.clearCookie(this.planIdKey);
+    this.clearCookie('auth_token');
+    this.clearCookie('auth_user');
+
+    if (typeof localStorage !== 'undefined') {
+      [
+        'guest_mode',
+        'auth_user',
+        'auth_token',
+        this.planIdKey,
+        'CapacitorStorage.auth_user',
+        'CapacitorStorage.auth_token',
+        `CapacitorStorage.${this.planIdKey}`,
+        'audiobook_pro_notice_closed',
+        'dashboard_pro_notice_closed',
+        'show_dashboard_welcome',
+        this.loginRedirectKey
+      ].forEach((key) => localStorage.removeItem(key));
+    }
+  }
+
+  private normalizeRedirectUrl(url: string | null | undefined): string | null {
+    if (!url) {
+      return null;
+    }
+
+    const trimmed = url.trim();
+
+    if (!trimmed.startsWith('/') || trimmed.startsWith('//')) {
+      return null;
+    }
+
+    if (trimmed.startsWith('/auth') || trimmed === '/welcome') {
+      return null;
+    }
+
+    return trimmed;
   }
 
   private async persistPlanId(planId: number | string | null | undefined): Promise<void> {
@@ -342,6 +427,5 @@ export class AuthService {
   private clearCookie(key: string): void {
     document.cookie = `${key}=; Max-Age=0; Path=/; SameSite=Lax`;
   }
-
 
 }

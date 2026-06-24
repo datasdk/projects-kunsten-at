@@ -1,19 +1,56 @@
 .auth-header ion-toolbar {
   --background: #ffffff;
   --color: var(--app-heading);
+  position: relative;
+}
+
+.auth-header ion-buttons {
+  position: relative;
+  z-index: 2;
 }
 
 .auth-header ion-back-button {
   --color: var(--app-icon-color);
 }
 
+.auth-header ion-title {
+  position: absolute;
+  inset: 0 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-heading);
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+}
+
 .auth-content {
   --background: #ffffff;
 }
 
-.auth-container {
+.auth-content::part(scroll) {
+  display: flex;
   min-height: 100%;
-  display: grid;
-  place-items: center;
-  padding: 24px 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-container {
+  display: flex;
+  width: 100%;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px calc(24px + var(--ion-safe-area-bottom, 0px));
+}
+
+@media (max-height: 700px) {
+  .auth-content::part(scroll) {
+    align-items: flex-start;
+  }
+
+  .auth-container {
+    min-height: auto;
+  }
 }

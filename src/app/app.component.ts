@@ -1,18 +1,27 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
-import { IonicModule, MenuController } from '@ionic/angular';
+import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { MenuController } from '@ionic/angular/standalone';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
+  arrowBackSharp,
   arrowForwardOutline,
   bookOutline,
   checkmarkCircleOutline,
+  chevronBack,
+  chevronBackOutline,
+  chevronForward,
+  chevronForwardOutline,
+  close,
   closeOutline,
+  documentTextOutline,
   ellipsisVertical,
+  helpCircleOutline,
   homeOutline,
+  informationCircleOutline,
   logInOutline,
   logOutOutline,
   menuOutline,
@@ -24,6 +33,7 @@ import {
   playSkipBackCircleOutline,
   playSkipForwardCircleOutline,
   refreshOutline,
+  settingsOutline,
   star,
   starOutline,
   statsChartOutline,
@@ -36,6 +46,7 @@ import { filter, first } from 'rxjs';
 import { AuthService } from '@/auth/services/auth.service';
 import { FirebasePushService } from '@/notifications/services/firebase-push.service';
 import { DeepLinkService } from '@services/deep-link.service';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-root',
@@ -45,11 +56,12 @@ import { DeepLinkService } from '@services/deep-link.service';
     RouterLink,
     RouterLinkActive,
     CommonModule,
-    IonicModule
+    ...IONIC_STANDALONE_IMPORTS
   ],
 })
 export class AppComponent implements OnInit {
-  hideRootMenu = false;
+  hideRootMenu = true;
+  disableSwipeBack = true;
   loggingOut = false;
   private splashHidden = false;
 
@@ -62,12 +74,21 @@ export class AppComponent implements OnInit {
   ) {
     addIcons({
       arrowBackOutline,
+      arrowBackSharp,
       arrowForwardOutline,
       bookOutline,
       checkmarkCircleOutline,
+      chevronBack,
+      chevronBackOutline,
+      chevronForward,
+      chevronForwardOutline,
+      close,
       closeOutline,
+      documentTextOutline,
       ellipsisVertical,
+      helpCircleOutline,
       homeOutline,
+      informationCircleOutline,
       logInOutline,
       logOutOutline,
       menuOutline,
@@ -79,6 +100,7 @@ export class AppComponent implements OnInit {
       playSkipBackCircleOutline,
       playSkipForwardCircleOutline,
       refreshOutline,
+      settingsOutline,
       star,
       starOutline,
       statsChartOutline,
@@ -87,15 +109,24 @@ export class AppComponent implements OnInit {
       trendingUpOutline,
       videocamOutline
     });
+
+    this.applyRouteChrome(this.router.url);
   }
 
   ngOnInit(): void {
-    this.hideRootMenu = this.isShelllessRoute(this.router.url);
+    this.applyRouteChrome(this.router.url);
+
     this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {
-        console.info('[app] Navigation finished', event.urlAfterRedirects);
-        this.hideRootMenu = this.isShelllessRoute(event.urlAfterRedirects);
+        if (event instanceof NavigationStart) {
+          this.applyRouteChrome(event.url);
+          return;
+        }
+
+        if (event instanceof NavigationEnd) {
+          console.info('[app] Navigation finished', event.urlAfterRedirects);
+          this.applyRouteChrome(event.urlAfterRedirects);
+        }
       });
 
     this.router.events
@@ -144,7 +175,18 @@ export class AppComponent implements OnInit {
   private isShelllessRoute(url: string): boolean {
     const path = url.split('?')[0];
     return path.startsWith('/auth')
-      || path.startsWith('/welcome');
+      || path.startsWith('/welcome')
+      || path === '/audiobook/player'
+      || path === '/pro';
+  }
+
+  private isSwipeBackDisabledRoute(url: string): boolean {
+    return url.split('?')[0] === '/audiobook/player';
+  }
+
+  private applyRouteChrome(url: string): void {
+    this.hideRootMenu = this.isShelllessRoute(url);
+    this.disableSwipeBack = this.isSwipeBackDisabledRoute(url);
   }
 
   private async hideSplashWhenAppIsReady(): Promise<void> {

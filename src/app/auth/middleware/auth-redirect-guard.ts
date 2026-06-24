@@ -7,7 +7,7 @@ export const authRedirectGuard: CanActivateFn = async () => {
   const router = inject(Router);
 
   if (await authService.isLoggedin()) {
-    return router.createUrlTree(['/home/dashboard']);
+    return router.parseUrl(await authService.consumeLoginRedirect('/home/dashboard'));
   }
 
   return true;

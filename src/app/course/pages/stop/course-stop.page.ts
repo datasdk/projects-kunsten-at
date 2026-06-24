@@ -1,20 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+
 import { AlertService } from '@services/alert.service';
 import { CourseQuestion } from '@/course/interfaces/course-question.interface';
 import { CourseProgressService } from '@/course/services/course-progress.service';
+import { ratingColor } from '@/course/utils/rating-color.util';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-course-stop',
   standalone: true,
   templateUrl: './course-stop.page.html',
   styleUrls: ['./course-stop.page.scss'],
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS]
 })
 export class CourseStopPage {
   readonly ratingValues = [1, 2, 3, 4, 5];
+  readonly ratingColor = ratingColor;
   questions: CourseQuestion[];
   loading = false;
   categoryId: string | null;
@@ -43,17 +46,24 @@ export class CourseStopPage {
 
     this.loading = true;
 
-    await this.progress.setStop({
-      category_id: this.categoryId,
-      title: 'Min tilstand (efter)',
-      days: this.days,
-      statistics: {
-        items: this.questions,
-        category: 'evolution_end'
-      }
-    });
+    try {
+      await this.progress.setStop({
+        category_id: this.categoryId,
+        title: 'Min tilstand (efter)',
+        days: this.days,
+        statistics: {
+          items: this.questions,
+          category: 'evolution_end'
+        }
+      });
 
-    this.loading = false;
-    this.router.navigate(['/home/results']);
+      await this.router.navigate(['/home/results'], {
+        queryParams: { refresh: Date.now() }
+      });
+    } catch (error) {
+      await this.alerts.alert('Afslutningstest', 'Resultatet kunne ikke gemmes. Prøv igen.');
+    } finally {
+      this.loading = false;
+    }
   }
 }

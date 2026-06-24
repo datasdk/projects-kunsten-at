@@ -1,10 +1,11 @@
 /// <reference types="@angular/localize" />
 
-import { importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicRouteStrategy } from '@ionic/angular/standalone';
+import { provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient } from '@angular/common/http';
+import { Capacitor } from '@capacitor/core';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
@@ -20,7 +21,10 @@ window.addEventListener('unhandledrejection', (event) => {
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    importProvidersFrom(IonicModule.forRoot({ animated: true })),
+    provideIonicAngular({
+      animated: true,
+      mode: Capacitor.getPlatform() === 'ios' ? 'ios' : 'md'
+    }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient()
   ],

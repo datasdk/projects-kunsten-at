@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+
 import { AuthService } from '@/auth/services/auth.service';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-guest-welcome',
   standalone: true,
   templateUrl: './guest-welcome.page.html',
   styleUrls: ['./guest-welcome.page.scss'],
-  imports: [CommonModule, IonicModule, RouterLink]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS, RouterLink]
 })
 export class GuestWelcomePage {
   constructor(

@@ -4,7 +4,7 @@
 }
 
 .terms-content {
-  --background: #f6f8f6;
+  --background: #ffffff;
 }
 
 .terms-content::part(scroll) {
@@ -38,12 +38,8 @@
 .terms-body {
   overflow: visible;
   max-height: none;
-  background: #ffffff;
-  border: 1px solid var(--app-border);
-  border-radius: 8px;
-  padding: 16px;
+  padding: 0;
   line-height: 1.58;
-  box-shadow: 0 8px 22px rgba(31, 41, 51, 0.06);
 }
 
 .terms-body :where(h1, h2, h3, h4) {
@@ -52,4 +48,10 @@
 
 .terms-body :where(p, ul, ol) {
   margin-top: 0;
+}
+
+.state-message {
+  margin: 0;
+  color: #58635f;
+  line-height: 1.5;
 }

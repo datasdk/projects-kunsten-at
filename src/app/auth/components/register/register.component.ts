@@ -3,8 +3,7 @@ import { AuthService } from '@/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'auth-register',
@@ -14,7 +13,7 @@ import { IonicModule } from '@ionic/angular';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    IonicModule
+    ...IONIC_STANDALONE_IMPORTS
   ]
 })
 

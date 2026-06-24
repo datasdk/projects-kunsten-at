@@ -18,28 +18,42 @@
   padding: 0 16px 22px;
 }
 
-.access-notice {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 14px;
-  padding: 12px 10px 12px 14px;
-  border-radius: 8px;
-  background: rgba(22, 27, 36, 0.82);
-  color: #ffffff;
+.dashboard-banners {
+  padding: 0 16px;
 }
 
-.access-notice p {
+.access-banner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding: 13px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(86, 120, 184, 0.22);
+  background: #edf3fb;
+  color: #24332d;
+}
+
+.access-banner ion-icon {
+  color: var(--app-icon-color);
+  font-size: 1.25rem;
+  margin-top: 1px;
+}
+
+.access-banner p {
   margin: 0;
   font-size: 0.92rem;
   line-height: 1.35;
 }
 
-.access-notice ion-button {
-  --color: #ffffff;
-  --padding-start: 0;
-  --padding-end: 0;
-  width: 34px;
-  height: 34px;
+.access-banner a {
+  color: var(--app-icon-color);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.pro-banner {
+  background: #f7f0fa;
+  border-color: rgba(219, 71, 133, 0.2);
 }

@@ -5,6 +5,7 @@
 .course-content::part(scroll) {
   display: flex;
   justify-content: center;
+  padding-bottom: calc(36px + var(--ion-safe-area-bottom, 0px));
 }
 
 .course-panel {
@@ -16,6 +17,7 @@
   padding: 18px;
   box-sizing: border-box;
   box-shadow: 0 12px 28px rgba(31, 41, 51, 0.08);
+  margin-bottom: 24px;
 }
 
 h1 {
@@ -48,18 +50,42 @@ p {
 
 .rating {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
-  gap: 2px;
+  gap: 4px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .rating ion-button {
-  --padding-start: 6px;
-  --padding-end: 6px;
-  min-width: 42px;
+  --padding-start: 4px;
+  --padding-end: 4px;
+  margin: 0;
+  min-width: 36px;
+  max-width: 42px;
+  flex: 0 1 40px;
 }
 
 .rating ion-icon {
-  font-size: 30px;
-  color: #f0b904;
+  font-size: 28px;
+  color: var(--ion-color-medium);
+}
+
+.rating ion-button.selected ion-icon {
+  color: var(--rating-color);
+}
+
+@media (max-width: 380px) {
+  .course-panel {
+    padding: 14px;
+  }
+
+  .rating ion-button {
+    min-width: 32px;
+    flex-basis: 34px;
+  }
+
+  .rating ion-icon {
+    font-size: 24px;
+  }
 }

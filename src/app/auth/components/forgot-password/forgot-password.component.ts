@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '@/auth/services/auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'auth-forgot-password',
@@ -13,7 +14,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    IonicModule,
+    ...IONIC_STANDALONE_IMPORTS,
     RouterModule,
     CommonModule
   ]

@@ -1,21 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+
 import { CourseSnapshot } from '@/course/interfaces/course-snapshot.interface';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-my-course-card',
   standalone: true,
   templateUrl: './my-course-card.component.html',
   styleUrls: ['./my-course-card.component.scss'],
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS]
 })
 export class MyCourseCardComponent {
   @Input() course: CourseSnapshot | null = null;
-  @Output() removeCourseRequested = new EventEmitter<void>();
-
-  menuOpen = false;
 
   constructor(
     private router: Router
@@ -32,10 +30,5 @@ export class MyCourseCardComponent {
         index: this.course.index ?? 0
       }
     });
-  }
-
-  removeCourse(): void {
-    this.removeCourseRequested.emit();
-    this.menuOpen = false;
   }
 }

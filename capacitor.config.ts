@@ -3,7 +3,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'dk.kunstenat.app',
+  appId: 'app.kunstenat.dk',
   appName: 'Kunsten At',
   webDir: 'www/da',
   server: {
@@ -19,6 +19,11 @@ const config: CapacitorConfig = {
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: true
+    },
+    StatusBar: {
+      // Capacitor's LIGHT value means dark status-bar content for a light UI.
+      style: 'LIGHT',
+      backgroundColor: '#ffffff'
     },
     Keyboard: {
       resize: 'ionic'

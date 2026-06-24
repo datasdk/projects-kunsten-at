@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+
 import { LoadingComponent } from '@/ui/loading/loading.component';
 import { SoundItem } from '../../interfaces/sound-item.interface';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-audio-player',
   standalone: true,
   templateUrl: './audio-player.component.html',
   styleUrls: ['./audio-player.component.scss'],
-  imports: [CommonModule, IonicModule, LoadingComponent]
+  imports: [CommonModule, ...IONIC_STANDALONE_IMPORTS, LoadingComponent]
 })
 export class AudioPlayerComponent implements OnChanges, OnDestroy {
   @Input() sounds: SoundItem[] = [];

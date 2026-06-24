@@ -1,33 +1,36 @@
-<div class="auth-form">
+<div class="auth-form animate__animated animate__fadeInUp app-animate">
   <header>
-    <h1>Log ind</h1>
-    <p>Fortsæt til dine forløb, lydbøger og statistik.</p>
+    <h1>Velkommen</h1>
+    <p>Log ind for at fortsætte til dine forløb, lydbøger og personlige resultater.</p>
   </header>
 
   <form [formGroup]="loginForm" (ngSubmit)="submit()">
-    <ion-item lines="none">
+  
       <ion-input
         type="email"
         formControlName="email"
         placeholder="dig@email.dk"
         label="E-mail"
         labelPlacement="floating"
+         fill="outline" 
       ></ion-input>
-    </ion-item>
+
+      
+
 
     <p *ngIf="errors?.email" class="error-text">{{ errors?.email }}</p>
 
-    <ion-item lines="none">
+   
       <ion-input
         type="password"
         formControlName="password"
         label="Kodeord"
         labelPlacement="floating"
         placeholder="Indtast kodeord"
+        fill="outline" 
       ></ion-input>
-    </ion-item>
+   
 
-    <a class="forgot-link" [routerLink]="['/auth/reset']">Glemt kodeord?</a>
     <p *ngIf="errors?.password" class="error-text">{{ errors?.password }}</p>
 
     <ion-button expand="block" type="submit" [disabled]="loading">
@@ -35,6 +38,7 @@
       <span *ngIf="!loading">Log ind</span>
     </ion-button>
 
-    <a class="register-link" routerLink="/auth/register">Opret ny konto</a>
+    <a class="forgot-link" [routerLink]="['/auth/reset']">Jeg har glemt mit kodeord</a>
+    <a class="register-link" routerLink="/auth/register">Ny bruger? Opret en konto</a>
   </form>
 </div>

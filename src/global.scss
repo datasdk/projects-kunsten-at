@@ -5,7 +5,6 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
-@use 'tailwindcss';
 
 
 html {
@@ -17,6 +16,8 @@ html {
     typography: Roboto,
     density: 0,
   ));
+
+  background-color: #ffffff;
 }
 
 body {
@@ -73,7 +74,86 @@ body {
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* The app is designed as a light interface; keep Ionic from switching component
+   variables underneath custom page styles on devices using dark mode. */
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: "Nunito Sans", Inter, Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  background: #ffffff;
+  color: var(--app-text, #24332d);
+  font-family: "Nunito Sans", Inter, Roboto, "Helvetica Neue", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+img,
+svg,
+ion-icon {
+  -webkit-user-drag: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+ion-button,
+ion-back-button,
+ion-menu-button,
+ion-tab-button,
+a,
+button {
+  touch-action: manipulation;
+}
+
+ion-toast.app-toast {
+  --border-radius: 10px;
+  --box-shadow: 0 12px 24px rgba(17, 24, 39, 0.14);
+  --max-width: min(92vw, 520px);
+  --offset-y: calc(var(--ion-safe-area-top, 0px) + 8px);
+}
+
+ion-toast.app-toast-success {
+  --background: #e7f4ea;
+  --color: #1f5e33;
+}
+
+ion-toast.app-toast-danger {
+  --background: #f8e7e7;
+  --color: #7a2222;
+}
+
+.app-animate {
+  --animate-duration: 560ms;
+  --animate-delay: 0ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.app-animate-slow {
+  --animate-duration: 680ms;
+}
+
+.app-animate-delay {
+  --animate-delay: 80ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate__animated,
+  .app-animate {
+    animation: none !important;
+    transition: none !important;
+  }
+}

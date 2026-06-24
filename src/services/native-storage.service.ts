@@ -35,10 +35,32 @@ export class NativeStorageService {
 
   async remove(key: string): Promise<void> {
     await Preferences.remove({ key });
+    this.removeBrowserFallback(key);
   }
 
   async removeByPrefix(prefix: string): Promise<void> {
     const { keys } = await Preferences.keys();
     await Promise.all(keys.filter((key) => key.startsWith(prefix)).map((key) => this.remove(key)));
+    this.removeBrowserFallbackByPrefix(prefix);
+  }
+
+  private removeBrowserFallback(key: string): void {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+
+    localStorage.removeItem(key);
+    localStorage.removeItem(`CapacitorStorage.${key}`);
+  }
+
+  private removeBrowserFallbackByPrefix(prefix: string): void {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+
+    const storagePrefixes = [prefix, `CapacitorStorage.${prefix}`];
+    Object.keys(localStorage)
+      .filter((key) => storagePrefixes.some((storagePrefix) => key.startsWith(storagePrefix)))
+      .forEach((key) => localStorage.removeItem(key));
   }
 }

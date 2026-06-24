@@ -1,16 +1,29 @@
+:host {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+}
+
 .auth-form {
-  width: min(100%, 420px);
+  width: 100%;
+  padding: 22px 20px;
+  border: 1px solid rgba(31, 41, 51, 0.08);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(31, 41, 51, 0.08);
 }
 
 header {
-  margin-bottom: 22px;
+  margin-bottom: 16px;
   text-align: center;
 }
 
 h1 {
   margin: 0 0 8px;
-  font-size: 1.55rem;
+  color: var(--app-heading);
+  font-size: 1.72rem;
   font-weight: 900;
+  line-height: 1.12;
 }
 
 p {
@@ -25,13 +38,23 @@ form {
 }
 
 ion-item {
-  --min-height: 58px;
-  --background: #f7f9fb;
+  --min-height: 52px;
+  --background: #f7f8fa;
   --border-radius: 8px;
   --padding-start: 14px;
   --inner-padding-end: 14px;
+  --highlight-color-focused: var(--app-icon-color);
   border: 1px solid rgba(31, 41, 51, 0.08);
   border-radius: 8px;
+}
+
+ion-input {
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --color: var(--app-text);
+  --placeholder-color: #7a8580;
+  --placeholder-opacity: 1;
+  min-height: 50px;
 }
 
 ion-button {
@@ -39,7 +62,7 @@ ion-button {
   --background-hover: #4567a6;
   --border-radius: 8px;
   min-height: 48px;
-  margin-top: 6px;
+  margin-top: 8px;
   font-weight: 900;
 }
 
@@ -58,8 +81,8 @@ ion-button {
 }
 
 .forgot-link {
-  justify-self: start;
-  margin-top: -4px;
+  justify-self: center;
+  margin-top: 2px;
 }
 
 .register-link {

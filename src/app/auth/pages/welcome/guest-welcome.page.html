@@ -1,5 +1,5 @@
-<ion-content class="welcome-content">
-  <section class="welcome-hero">
+<ion-content fullscreen class="welcome-content">
+  <section class="welcome-hero animate__animated animate__fadeInUp app-animate app-animate-slow">
     <img src="assets/app/kunsten-at-taemme-en-tiger.jpg" alt="Kunsten at taemme en tiger" />
 
     <h1>Kunsten at tæmme en tiger</h1>
@@ -8,7 +8,9 @@
       mere nærvær i hverdagen.
     </p>
 
-    <ion-button routerLink="/auth/login">Log ind</ion-button>
-    <button class="guest-link" type="button" (click)="continueAsGuest()">Fortsæt som gæst</button>
+    <div class="welcome-actions">
+      <ion-button routerLink="/auth/login">Log ind</ion-button>
+      <button class="guest-link" type="button" (click)="continueAsGuest()">Fortsæt som gæst</button>
+    </div>
   </section>
 </ion-content>

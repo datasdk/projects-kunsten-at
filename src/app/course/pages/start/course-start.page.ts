@@ -1,27 +1,30 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+
 import { AuthService } from '@/auth/services/auth.service';
 import { AlertService } from '@services/alert.service';
 import { ApiService } from '@services/api.service';
 import { CourseQuestion } from '@/course/interfaces/course-question.interface';
 import { CourseProgressService } from '@/course/services/course-progress.service';
 import { NotificationRegisterComponent } from '@/notifications/components/notification-register.component';
+import { ratingColor } from '@/course/utils/rating-color.util';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-course-start',
   standalone: true,
   templateUrl: './course-start.page.html',
   styleUrls: ['./course-start.page.scss'],
-  imports: [CommonModule, FormsModule, IonicModule, NotificationRegisterComponent]
+  imports: [CommonModule, FormsModule, ...IONIC_STANDALONE_IMPORTS, NotificationRegisterComponent]
 })
-export class CourseStartPage {
+export class CourseStartPage implements OnInit {
   step = 0;
   readonly maxStep = 4;
   readonly daysOptions = [7, 14, 21];
   readonly ratingValues = [1, 2, 3, 4, 5];
+  readonly ratingColor = ratingColor;
   days = 7;
   loading = false;
   questions: CourseQuestion[];
@@ -39,6 +42,31 @@ export class CourseStartPage {
     this.questions = this.progress.freshQuestions();
     this.categoryId = this.route.snapshot.queryParamMap.get('category_id');
     this.index = this.route.snapshot.queryParamMap.get('index') ?? '0';
+  }
+
+  async ngOnInit(): Promise<void> {
+    if (await this.auth.isLoggedin()) {
+      return;
+    }
+
+    const destination = this.router.url;
+    await this.auth.setLoginRedirect(destination);
+    await this.alerts.alert(
+      'Log ind kræves',
+      'Du er ikke logget ind. Derfor er kun én video tilgængelig. Log ind for at få fuld adgang.',
+      ['Log ind']
+    );
+    await this.router.navigateByUrl('/auth/login');
+  }
+
+  get stepTitle(): string {
+    return [
+      'Start forløb',
+      'Din tilstand',
+      'Vælg varighed',
+      'Notifikationer',
+      'Klar'
+    ][this.step] ?? 'Start forløb';
   }
 
   get courseName(): string {
@@ -59,7 +87,7 @@ export class CourseStartPage {
     }
 
     if (this.step < this.maxStep) {
-      this.step += 1;
+      this.goToStep(this.step + 1);
       return;
     }
 
@@ -72,7 +100,11 @@ export class CourseStartPage {
       return;
     }
 
-    this.step = Math.max(0, this.step - 1);
+    this.goToStep(Math.max(0, this.step - 1));
+  }
+
+  handleNotificationRegistered(): void {
+    this.goToStep(4);
   }
 
   close(): void {
@@ -101,7 +133,7 @@ export class CourseStartPage {
 
       await this.createNotifications();
 
-      this.router.navigate(['/videos'], {
+      await this.router.navigate(['/videos'], {
         queryParams: {
           category_id: this.categoryId,
           index: this.index
@@ -134,10 +166,18 @@ export class CourseStartPage {
       startdate: this.sendingDate(0)
     });
 
-    await this.api.post('firebase/notifications', {
-      recipients: 'player_id',
-      notifications
-    });
+    try {
+      await this.api.post('firebase/notifications', {
+        recipients: 'player_id',
+        notifications
+      });
+    } catch (error) {
+      console.warn('Course notification scheduling failed', error);
+    }
+  }
+
+  private goToStep(step: number): void {
+    this.step = Math.max(0, Math.min(step, this.maxStep));
   }
 
   private sendingDate(dayOffset: number): string {

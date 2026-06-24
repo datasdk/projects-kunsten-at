@@ -1,0 +1,52 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.help-content {
+  --background: #ffffff;
+}
+
+.help-content::part(scroll) {
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-panel {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  width: min(100% - 36px, 560px);
+  margin: 0 auto;
+  padding: 22px 0;
+  background: #ffffff;
+  text-align: center;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+h1 {
+  color: var(--app-heading);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+p {
+  color: #58635f;
+  line-height: 1.5;
+}
+
+ion-button {
+  --background: var(--app-icon-color);
+  --background-hover: #4567a6;
+  --border-radius: 8px;
+  width: min(100%, 340px);
+  margin-top: 8px;
+  min-height: 48px;
+  font-weight: 900;
+}

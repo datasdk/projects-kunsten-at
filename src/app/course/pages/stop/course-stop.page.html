@@ -1,5 +1,5 @@
 <ion-content class="ion-padding course-content">
-  <section class="course-panel">
+  <section class="course-panel animate__animated animate__fadeInUp app-animate">
     <h1>Tilstands-test afslutning</h1>
     <p>Svar på spørgsmålene for at se din udvikling før og efter forløbet.</p>
 
@@ -9,11 +9,12 @@
         <span>{{ question.left }}</span>
         <span>{{ question.right }}</span>
       </div>
-      <div class="rating">
+      <div class="rating" [style.--rating-color]="ratingColor(question.value)">
         <ion-button
           *ngFor="let value of ratingValues"
           fill="clear"
           type="button"
+          [class.selected]="question.value >= value"
           (click)="setRating(question, value)"
           [attr.aria-label]="value + ' stjerner'"
         >

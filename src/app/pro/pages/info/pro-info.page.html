@@ -1,0 +1,17 @@
+<ion-header class="ion-no-border pro-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home/dashboard" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pro adgang</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pro-content">
+  <section class="pro-panel animate__animated animate__fadeInUp app-animate">
+    <ion-note *ngIf="isPro" color="medium">Du har allerede Pro adgang.</ion-note>
+    <h1>Pro medlemskab</h1>
+    <p>With a Pro membership you get access to all courses and audiobooks.</p>
+    <p>Contact us through our website or purchase the book directly at our lectures and events.</p>
+  </section>
+</ion-content>

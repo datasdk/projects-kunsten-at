@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { AlertController, IonContent, IonicModule } from '@ionic/angular';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { IonContent } from '@ionic/angular/standalone';
 import { AuthService } from '@/auth/services/auth.service';
 import { BoxBreathingComponent } from '../../components/box-breathing/box-breathing.component';
 import { MyCourseCardComponent } from '../../components/my-course-card.component';
@@ -9,27 +9,28 @@ import { CourseSnapshot } from '@/course/interfaces/course-snapshot.interface';
 import { CourseProgressService } from '@/course/services/course-progress.service';
 import { CourseWheelComponent } from '../../components/course-wheel/course-wheel.component';
 import { filter, Subscription } from 'rxjs';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
-  imports: [CommonModule, IonicModule, CourseWheelComponent, BoxBreathingComponent, MyCourseCardComponent]
+  imports: [CommonModule, RouterLink, ...IONIC_STANDALONE_IMPORTS, CourseWheelComponent, BoxBreathingComponent, MyCourseCardComponent]
 })
 export class DashboardPage implements OnInit, OnDestroy {
   @ViewChild(IonContent) content?: IonContent;
   @ViewChild(CourseWheelComponent) wheel?: CourseWheelComponent;
 
   course: CourseSnapshot | null = null;
-  showDashboardProNotice = false;
+  loggedIn = false;
+  isPro = false;
   private routerSubscription?: Subscription;
 
   constructor(
     public auth: AuthService,
     private router: Router,
-    private progress: CourseProgressService,
-    private alertController: AlertController
+    private progress: CourseProgressService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -61,45 +62,22 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.course = null;
   }
 
-  closeDashboardProNotice(): void {
-    localStorage.setItem('dashboard_pro_notice_closed', '1');
-    this.showDashboardProNotice = false;
-  }
-
   private async refreshState(): Promise<void> {
     if (!(await this.auth.hasAppAccess())) {
       await this.router.navigateByUrl('/welcome');
       return;
     }
 
-    const loggedIn = await this.auth.isLoggedin();
+    this.loggedIn = await this.auth.isLoggedin();
 
-    if (loggedIn) {
+    if (this.loggedIn) {
       await this.auth.getUser();
       this.course = await this.progress.getStart();
-      this.showDashboardProNotice = !this.auth.hasPlan(1)
-        && localStorage.getItem('dashboard_pro_notice_closed') !== '1';
-      await this.showLoginWelcomeOnce();
+      this.isPro = this.auth.hasPlan(1);
       return;
     }
 
     this.course = null;
-    this.showDashboardProNotice = false;
-  }
-
-  private async showLoginWelcomeOnce(): Promise<void> {
-    if (localStorage.getItem('show_dashboard_welcome') !== '1') {
-      return;
-    }
-
-    localStorage.removeItem('show_dashboard_welcome');
-
-    const alert = await this.alertController.create({
-      header: 'Velkommen',
-      message: 'Velkommen til Kunsten at tæmme en tiger. Her får du adgang til videokurser, daglige øvelser, lydbøger og vejrtrækningsøvelser, der kan hjælpe dig med at skabe mere ro i sindet.',
-      buttons: ['OK']
-    });
-
-    await alert.present();
+    this.isPro = false;
   }
 }

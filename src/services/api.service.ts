@@ -35,6 +35,24 @@ export class ApiService {
     );
   }
 
+  async patch<T>(path: string, body: unknown = {}, params: ApiParams = {}): Promise<T> {
+    return firstValueFrom(
+      this.http.patch<T>(this.url(path), body, {
+        headers: await this.headers(),
+        params: this.params(params)
+      })
+    );
+  }
+
+  async delete<T>(path: string, params: ApiParams = {}): Promise<T> {
+    return firstValueFrom(
+      this.http.delete<T>(this.url(path), {
+        headers: await this.headers(),
+        params: this.params(params)
+      })
+    );
+  }
+
   private url(path: string): string {
     return `${this.baseUrl}/${path.replace(/^\/+/, '')}`;
   }

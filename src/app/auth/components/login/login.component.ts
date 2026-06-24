@@ -11,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IONIC_STANDALONE_IMPORTS } from '@/ui/ionic-standalone.imports';
 
 @Component({
   selector: 'auth-login',
@@ -21,7 +21,7 @@ import { IonicModule } from '@ionic/angular';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    IonicModule,
+    ...IONIC_STANDALONE_IMPORTS,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -31,19 +31,14 @@ import { IonicModule } from '@ionic/angular';
   ]
 })
 
-
 export class LoginComponent {
 
-
   loginForm = new FormGroup({
-    email: new FormControl('', { nonNullable: true }),
-    password: new FormControl('', { nonNullable: true }),
-    rememberMe: new FormControl(false, { nonNullable: true })
+    email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
+    password: new FormControl('', { nonNullable: true, validators: [Validators.required] })
   });
 
-
   user: any = null;
-  redirectSuccess: string = '/home/dashboard';
   loading = false;
 
   
@@ -52,41 +47,44 @@ export class LoginComponent {
     password: null
   };
 
-
   constructor(
     private auth: AuthService,
     private router: Router
   ) {}
 
-
   async submit() {
+    this.errors = {
+      email: null,
+      password: null
+    };
+    this.loginForm.markAllAsTouched();
 
-    
+    if (this.loginForm.invalid) {
+      this.errors = {
+        email: this.emailError(),
+        password: this.passwordError()
+      };
+      return;
+    }
+
     this.loading = true;
-
-    this.errors = null;
-
 
     try {
 
+      const { email, password } = this.loginForm.getRawValue();
 
-      const { email, password, rememberMe } = this.loginForm.getRawValue();
-
-      const login = await this.auth.login(email, password, rememberMe);
+      const login = await this.auth.login(email, password, true);
 
       this.user = login.user;
-      localStorage.setItem('show_dashboard_welcome', '1');
+      const redirectUrl = await this.auth.consumeLoginRedirect('/home/help');
 
-      this.router.navigateByUrl(this.redirectSuccess);
-
+      this.router.navigateByUrl(redirectUrl);
 
     } catch (err: any) {
 
-
-      this.errors = err?.error?.errors || {};
+      this.errors = this.normalizeErrors(err?.error?.errors || {});
 
       console.log('Login error:', this.errors);
-
 
     } finally {
 
@@ -94,8 +92,41 @@ export class LoginComponent {
 
     }
 
-
   }
 
+  private emailError(): string | null {
+    const control = this.loginForm.controls.email;
+
+    if (control.hasError('required')) {
+      return 'E-mail skal udfyldes.';
+    }
+
+    if (control.hasError('email')) {
+      return 'Indtast en gyldig e-mailadresse.';
+    }
+
+    return null;
+  }
+
+  private passwordError(): string | null {
+    return this.loginForm.controls.password.hasError('required')
+      ? 'Kodeord skal udfyldes.'
+      : null;
+  }
+
+  private normalizeErrors(errors: Record<string, string | string[]>): Record<string, string | null> {
+    return {
+      email: this.firstError(errors['email']),
+      password: this.firstError(errors['password'])
+    };
+  }
+
+  private firstError(value: string | string[] | undefined): string | null {
+    if (Array.isArray(value)) {
+      return String(value[0] ?? '');
+    }
+
+    return value ? String(value) : null;
+  }
 
 }

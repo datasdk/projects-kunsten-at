@@ -1,40 +1,52 @@
-<app-loading *ngIf="loading" label="Henter lydbøger"></app-loading>
+<section *ngIf="loading" class="audio-list-loading" aria-live="polite">
+  <ion-spinner name="crescent"></ion-spinner>
+  <span>Henter lydbøger</span>
+</section>
 
 <ion-card *ngIf="!loading && error" class="state-card">
   <ion-card-content>{{ error }}</ion-card-content>
 </ion-card>
 
-<aside *ngIf="!loading && showAccessNotice" class="access-notice">
+<aside *ngIf="!loading && showAccessNotice" class="access-notice animate__animated animate__fadeInUp app-animate">
   <p>
     {{ accessNoticeText }}
-    <a *ngIf="showLoginLink" routerLink="/auth/login">Log ind nu</a>
+    <button *ngIf="showLoginLink" type="button" class="notice-login" (click)="login()">Log ind nu</button>
   </p>
   <ion-button fill="clear" type="button" aria-label="Luk besked" (click)="closeAccessNotice.emit()">
     <ion-icon name="close-outline"></ion-icon>
   </ion-button>
 </aside>
 
-<section *ngIf="!loading && playlist?.sounds?.length" class="audio-list-container">
-  <ion-list lines="none" class="audio-list">
-    <ion-item
+<section *ngIf="!loading && playlist?.sounds?.length" class="audio-list-container animate__animated animate__fadeInUp app-animate">
+  <div class="audio-list" role="list">
+    <button
       *ngFor="let sound of playlist?.sounds; let index = index"
       class="audio-item"
-      button
-      detail="true"
-      [routerLink]="['/audiobook/player']"
-      [queryParams]="{ id: playlist?.id, index: index }"
+      type="button"
+      role="listitem"
+      (click)="openSound(index)"
     >
-      <ion-thumbnail slot="start">
-        <img [src]="sound.image?.src || 'assets/kunsten-at/images/sound.jpg'" [alt]="sound.name" />
-      </ion-thumbnail>
+      <span class="audio-thumb" aria-hidden="true">
+        <div class="thumb-wrap" [class.loaded]="isImageLoaded(index)">
+          <ion-skeleton-text animated class="thumb-skeleton"></ion-skeleton-text>
+          <img
+            [src]="sound.image?.src || 'assets/kunsten-at/images/sound.jpg'"
+            [alt]="sound.name"
+            (load)="onImageLoaded(index)"
+            (error)="onImageLoaded(index)"
+          />
+        </div>
+      </span>
 
-      <ion-label>
-        <h2>{{ sound.name }}</h2>
-        <p *ngIf="sound.description" [innerHTML]="sound.description"></p>
-        <div>{{ sound.artist }}</div>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+      <span class="audio-copy">
+        <span class="audio-title">{{ sound.name }}</span>
+        <span class="audio-author">Thomas Fryd</span>
+        <span *ngIf="sound.description" class="audio-description" [innerHTML]="sound.description"></span>
+      </span>
+
+      <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+    </button>
+  </div>
 </section>
 
 <ion-card *ngIf="!loading && !error && !playlist?.sounds?.length" class="state-card">
